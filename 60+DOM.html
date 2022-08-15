@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM</title>
+    <link rel="stylesheet" type="text/css" href="estilo.css">
+</head>
+<body>
+    <h1>DOM APIs</h1>
+    <h2>DOM: Document Object Model</h2>
+    <h2>BOM: Browser Object Model</h2>
+    <h2>CSSOM: CSS Object Model</h2>
+    <h2>WEB APIs</h2>
+    <ul>
+        <li>Eventos</li>
+        <li>Forms</li>
+        <li>AJAX-Fetch</li>
+        <li>History</li>
+        <li>Web Storage</li>
+        <li>Geolocation</li>
+        <li>Drag & Drop</li>
+        <li>Indexed DB</li>
+        <li>Canvas</li>
+        <li>MatchMedia</li>
+        <li>etc...</li>
+    </ul>
+
+    <br>
+    <hr>
+    <br>
+    <h3>Manejo del Dom</h3>
+    <p id="que-es">
+        Just waking up in the morning gotta thank God
+        I don't know but today seems kinda odd
+        No barking from the dogs, no smog
+        And momma cooked a breakfast with no hog
+        I got my grub on, but didn't pig out
+        Finally got a call from a girl want to dig out
+        Hooked it up on later as I hit the do'
+        Thinking will i live another twenty fo'
+        I gotta go cause I got me a drop top
+    </p>
+
+    <!-- ESTO ES PARA ESCRIBIR RAPIDO EN HTML
+    SI LE HAGO TAB SE AUTOCOMPLETA COMO EL DE ABAJO
+    
+    nav#menu>ul>li*5>{seccion}
+    -->
+
+    <nav id="menu">
+        <ul>
+            <li><a href="">Seccion 1</a></li>
+            <li><a href="">Seccion 2</a></li>
+            <li><a href="">Seccion 3</a></li>
+            <li><a href="">Seccion 4</a></li>
+            <li><a href="">Seccion 5</a></li>
+        </ul>
+    </nav>
+    <input type="text" name="nombre" placeholder="Nombre">
+    <a class="link-dom" href="60+DOM.html" style="background-color: darkmagenta; color: #222";
+     data-description="document object model">DOM</a>
+
+    <section class="cards">
+        <figure class="card">
+            <img src="https://placeimg.com/200/200/tech" alt="Tech">
+            <figcaption>Tech</figcaption>
+        </figure>
+
+        <figure class="card">
+            <img src="https://placeimg.com/200/200/animals" alt="Animals">
+            <figcaption>Animals</figcaption>
+        </figure>
+
+        <figure class="card">
+            <img src="https://placeimg.com/200/200/people" alt="People">
+            <figcaption>People</figcaption>
+        </figure>
+
+        <figure class="card">
+            <img src="https://placeimg.com/200/200/music" alt="Music">
+            <figcaption>Music</figcaption>
+        </figure>
+
+        <figure class="card">
+            <img src="https://placeimg.com/200/200/nature" alt="Nature">
+            <figcaption>Nature</figcaption>
+        </figure>
+    </section>
+
+    <!--METO TEMPLATE-->
+    <template id="template-card">
+        <figure class="card">
+            <img>
+            <figcaption></figcaption>
+        </figure>
+        
+    </template>
+
+    <h3>Eventos en Javascript</h3>
+    <h4>Manejador de Eventos</h4>
+
+    <!-- esta es una foma con el atributo en la tag pero no es buena practica hacerlo asi-->
+    <button onclick="holaMundo()">Evento con atributo html</button>
+
+    <br><br>
+    <!-- esta si es una forma correcta de hacerlo-->
+    <button id="evento-semantico">Evento con manejador semantico</button>
+
+    <br><br>
+    <!-- para multiples funciones-->
+    <button id="evento-multiple">Evento con manejador multiple</button>
+
+    <br><br>
+    <!-- remover eventos-->
+    <button id="evento-remover">Remover Eventos</button>
+
+    <br><br>
+    <h4>Flujo de Eventos</h4>
+    <section class="eventos-flujo">
+        <div class="uno">
+            1
+            <div class="dos">
+                2
+                <div class="tres">
+                    3
+                    <a href="http://google.com" target="_blank" rel="noopener">LINK</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <br><br>
+    <h3 style="width: 2000px">Manejo del BOM</h3>
+    <button id="abrir-ventana">Abrir Ventana</button>
+    <br><br>
+    <button id="cerrar-ventana">Cerrar Ventana</button>
+    <br><br>
+    <button id="imprimir-ventana">Imprimir Ventana</button>
+
+    <!-- este html es para todos los srcipts de las clases dom
+    tenes que cambiar el script segun cual queres ejecutar-->
+    <script src="./78BOMmetodos.js"></script>
+</body>
+</html>

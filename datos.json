@@ -1,0 +1,11 @@
+{
+    "cadena": "dani",
+    "numero": 27,
+    "booleano": true,
+    "arreglo": ["gimnasio","basquet","programar"],
+    "objeto": {
+        "twitter":"@daniguanca",
+        "email": "dany12rp13@gmail.com"
+    },
+    "nulo": null
+}

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Canciones</title>
+    <style>
+        html{
+            font-family: sans-serif;
+        }
+
+        /*para no romper la maquetacion como no se las dimensiones del as imagenes que vienen,
+        pongo que tengan su achura y el heigth en auto para que no se deformen*/
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        main{
+            display: flex;
+            /* Uso column reverse para que muestre al reves, primero cancion despues artista
+            EN VERSION MOVIL*/
+            flex-direction: column-reverse;
+        }
+
+        .loader{
+            margin: auto;
+            display: none;
+        }
+
+        /* esto es para que la letra de la cancion se vea bien, osea los saltos de linea se respeten */
+        .song blockquote{
+            /* esto detecta los saltos de linea */
+            white-space: pre-wrap;
+        }
+
+        /*media query para escritorio*/
+        @media screen and (min-width: 800px){
+            main{
+                /*muestro en fila en vez de columna*/
+                flex-direction: row;
+            }
+
+            /*        >*    significa todos los hijos directos */
+            main >* {
+                /*flex basis es el tamaño del elemento del flexbox hijo, le pongo 50 para que cada uno tenga 50 de pantalla*/
+                flex-basis: 50%;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Buscador de Canciones</h1>
+    <form id="song-search">
+        <input type="text" name="artist" placeholder="Ingrese el interprete..." required>
+        <br>
+        <input type="text" name="song" placeholder="Ingrese la cancion..." required>
+        <br>
+        <input type="submit">
+    </form>
+    <img class="loader" src="../media/loader.svg" alt="cargando...">
+    
+    <!-- Para manejar los errores -->
+    <aside class="error"></aside>
+
+    <main>
+        <article class="artist"></article>
+        <article class="song"></article>
+    </main>
+
+    <script>
+        const $form = document.getElementById("song-search");
+        const $loader = document.querySelector(".loader");
+        const $error = document.querySelector(".error");
+        const $main = document.querySelector("main");
+        const $artist = document.querySelector(".artist");
+        const $song = document.querySelector(".song");
+
+        $form.addEventListener("submit", async e => {
+            //Parar el comportamiento por defecto
+            e.preventDefault();
+
+            try {
+                $loader.style.display = "block";
+                
+                let artist = e.target.artist.value.toLowerCase();
+                let song = e.target.song.value.toLowerCase();
+
+                let $artistTemplate = "";
+                let $songTemplate = "";
+
+                //Las rutas de las API
+                let artistAPI = `https://www.theaudiodb.com/api/v1/json/1/search.php?s=${artist}`;
+                let songAPI = `https://api.lyrics.ovh/v1/${artist}/${song}`;
+
+                //No uso el await aca porque no se cual fetch va a devolver primero asi que hago destructuracion
+                let artistFetch = fetch(artistAPI);
+                let songFetch = fetch(songAPI);
+
+                //En las destructuracion hago las variables artistRest pra artisFertch y songRes para sonfFetch
+                //hago un await y promiseAll para que espere a que ambas peticiones sean devueltas. PETICIONES ENTRE CORCHETES
+                let [artistRes, songRes] = await Promise.all([artistFetch, songFetch]);
+
+                let artistData = await artistRes.json();
+                let songData = await songRes.json();
+
+                console.log(artistData, songData);
+
+                //ARTIST
+                //Manejo el error
+                if (artistData.artists === null){
+
+                    $artistTemplate = `<h2>El artista <mark>${artist}</mark> no existe</h2>`;
+
+                } else {
+                    //Agarro el primer valor del arreglo suponiendo si llegan varios, pero generalmente viene uno solo
+
+                    let artist = artistData.artists[0];
+                    $artistTemplate = `
+                        <h2>${artist.strArtist}</h2>
+                        <img src="${artist.strArtistThumb}" alt="${artist.strArtist}">
+                        <p>${artist.intBornYear} - ${(artist.intDiedYear || "Presente")}</p>
+                        <p>${artist.strCountry}</p>
+                        <p>${artist.strGenre} - ${artist.strStyle}</p>
+                        <a href="http://${artist.strWebsite}" target="_blank">Sitio Web</a>
+                        <p>${artist.strBiographyEN}</p>
+                    `;
+                }
+
+                //SONG
+                if (songData.lyrics === "") {
+                    $songTemplate = `<h2>La cancion <mark>${song}</mark> no existe</h2>`;
+                }else{
+                    //la etiqueta blockquote es para citar
+                    $songTemplate = `
+                        <h2>${song.toUpperCase()}</h2>
+                        <blockquote>${songData.lyrics}</blockquote>
+                    `;
+                }
+
+
+                $loader.style.display = "none";
+                $artist.innerHTML = $artistTemplate;
+                $song.innerHTML = $songTemplate;
+
+            } catch (error) {
+                console.log(error);
+                let message = error.status || "Ocurrio un error";
+                $error.innerHTML = `<p>Error ${error.status}: ${message}</p>`;
+                $loader.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>

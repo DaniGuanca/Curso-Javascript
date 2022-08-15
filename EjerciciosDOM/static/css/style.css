@@ -1,0 +1,617 @@
+/* Reseteear CSS */
+/*EN :root van todas mis variables
+el color modal tiene un cuarto argumento es la opacidad asi sea algo mas trasparente
+doble punto es que estoy declarando una clase*/
+:root {
+  --main-font: sans-serif;
+  --font-size: 16px;  
+  --main-color: darkorchid;
+  --second-color: #222;
+  --main-modal-color:rgba(229, 30, 247, 0.85);
+  --second-modal-color: rgba(34,34,34,0.85);
+  --container-width: 1200px;
+}
+
+/*ahora reseteo el html con el tamaño de la caja entera
+la fuente de letra que puse arriba como variable y el tamaño tambien
+y el scroll behavior es para que el deslizamiento o desplazamiento sea lindo suave*/
+html {
+  box-sizing: border-box;
+  font-family: var(--main-font);
+  font-size: var(--font-size);
+  scroll-behavior: smooth;
+}
+
+/*el asterico significa todos los elementos
+el elemento after y before los elementos posteriores y anteriores
+inherit significa que hereda el valor del padre*/
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/*para eliminar los bordes le saco el margen porque por defecto vienen con 8px
+overlfow x hidden es para cuando hay mucho contenido horizontal en vez de que salga la barra de desplazamiento
+se oculte automaticamente ese contenido*/
+body {
+  margin : 0;
+  overflow-x: hidden;
+}
+
+/*si hay imagenes hago que se adapte a la maxima anchura del contender que lo tenga*/
+img {
+  max-width:100%;
+  height: auto;
+}
+
+.flex-row-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/*------------- Menu de Hamburguesa --------------*/
+.header {
+    position: sticky;
+    z-index: 997;
+    top: 0;
+    padding: 1rem;
+    background-color: var(--main-color);
+    color: var(--second-color);
+  }
+
+.header h1 {
+  /*el auto hace a los lados tambien */
+  margin: 0 auto;
+  text-align: center;
+}
+
+.Section {
+  padding: 2rem;
+  padding-top: 4rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: var(--container-width);
+  min-height: 100vh;
+  text-align: center;
+}
+
+/* vh y vw es view heigth y view width si pones bottom entonces el 0 es abajo y 100 es al tope*/
+/* el z-index con numero alto es para que cuando algo se superponga quede atras del boton*/
+.panel-btn {
+  position: fixed;
+  z-index: 999;
+  bottom: 1vh;
+  right: 1vw;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--main-color);
+  opacity: 100%;
+  visibility: visible;
+  transition: all 0.3s ease;
+}
+
+/*aca le doy z index 998 para que este delante de las otras cosas pero atras del boton
+top y bottom en 0 es para que vaya desde una punta de la pantalla a la otra al 0 de una y otra
+left y right lo mismo pero de en anchura*/
+.panel {
+  position: fixed;
+  z-index: 998;
+  background-color: var(--second-modal-color);
+  width: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+  /*para cuando hayan muchos elementos uso overflow en y para que los maneje automaticamente
+  osea que ponga una barra de navegacion asi si muestra todos los elementos*/
+  overflow-y: auto;
+  visibility: hidden;
+  /*le aplico una transicion para que sea mas lindo, el primer argumnto es a quien le aplico
+  el segundo de cuanto tiempo y el tercero el modo, ease es el mas suave*/
+  transition: transform 0.3s ease, opacity 0.5s ease;
+  /*con el transform voy a hacer que aparezca de arriba o de costado
+  el translate recibe x e y como argumento 
+  los valores negativos es de mas arriba por eso pongo -100 para que este bien arriba y no se vea*/
+  /*de arriba*/
+  transform: translate(0, -100%);
+  /*de abajo
+  transform: translate(0, 100%);
+  /*de derecha
+  transform: translate(100%, 0);
+  /*de izquierda
+  transform: translate(-100%, 0);
+  */
+}
+
+/*Creo la clase que voy a usar en el toggle para activar y desactivar el panel
+aca voy a poner el transform a 0 0 asi se ve */
+.panel.is-active {
+  transform: translate(0, 0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.menu {
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  text-align: center;
+}
+
+.menu a{
+  padding: 2rem;
+  width: inherit;
+  display: block;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: var(--main-color);
+  transition:all 0.3s ease;
+}
+
+.menu a:hover {
+  font-weight: bold;
+  color: var(--second-color);
+  background-color: var(--main-modal-color);
+}
+
+/*++++++++++++EVENTO TECLADO++++++++++++*/
+.fondoEventoTeclado {
+  display: flex;
+  background-color: var(--second-color);
+  min-height: 50vh;
+}
+
+.circulo {
+  margin: auto;
+  height: 4rem;
+  width: 4rem;
+  background-color: var(--main-color);
+  border-radius: 50%;
+}
+
+/*+++++++++++BOTON TOP++++++++++++++*/
+.top-btn {
+  position: fixed;
+  z-index: 999;
+  bottom: 1vh;
+  /* calc permite hacer calculos*/
+  right:  calc(4.25rem + 1vw);
+  width: 4rem;
+  height: 4rem;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--main-color);
+  color: var(--second-color);
+  outline: 0;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+
+.top-btn:hover {
+  background-color: var(--second-color);
+  color: var(--main-color);
+}
+
+/* no pongo el display en none, porque no es animable yo quiero que tenga la animacion asi que
+le pongo opacity a 0 asi si se ve que desaparece animadamente y el visibility en hidden */
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+
+/*BOTON DARK LIGHT*/
+.theme-btn {
+  position: fixed;
+  z-index: 999;
+  bottom: 1vh;
+  left: 1vw;
+  width: 4rem;
+  height: 4rem;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 50%;
+
+  justify-content: center;
+  align-items: center;
+  background-color: var(--main-color);
+  color: var(--second-color);
+  outline: 0;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+
+.theme-btn:hover {
+  background-color: var(--second-color);
+  color: var(--main-color);
+}
+
+.dark {
+  background-color: var(--second-color);
+  color: var(--main-color);
+}
+
+/*MENSAJE ONLINE Y OFFLINE*/
+.online,
+.offline {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  background-color: green;
+  color: white;
+}
+
+.offline {
+  background-color: red;
+}
+
+/*TARJETAS*/
+.cards{
+  display:grid;
+  /*Hace que las tarjetas fluyan en columna para que quede responsivo y al achicar se agrupen
+  fr es fraccion, va de 250px a 1 fraccion que es como el espacio que sobre*/
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.card {
+  display: inline-block;
+  background-color: var(--second-color);
+  color: var(--main-color);
+  border: thin solid black;
+  transition: all 0.3s ease;
+}
+
+.card img{
+  width: 100%;
+  height: auto;
+}
+
+.card figcaption {
+  padding: 1rem;
+}
+
+/*la clase filtro para discriminar los resultados y no se vean*/
+.filter{
+  /*con display none lo oculta al toque pero le hace efecto el transition para que quede lindo
+  display: none;
+
+  Asi que hago como mas arriba uso visibility hidden y opacity a 0 acá
+  asi le hace efecto el transition y quede mas lindo*/
+  visibility: hidden;
+  opacity: 0;
+  /* pero esto solo esconde las tarjetas, no las saca como en display none
+  asi que hay que usar una propiedad de display grid que permite ordenar los elementso al ocultarlos
+  la propiedad es order
+  order en 1 te ordena todos los elementos visibles primero y ocultos al final*/
+  order: 1;
+}
+
+/********************* CAROUSEL SLIDE RESPONSIVO *************************/
+.slider {
+  position: relative;
+  width: 80%;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+.slider-slides {
+  position: relative;
+  height: 400px;
+}
+/*EL position absolute se ajusta respecto al primer objeto relativo que encuentre en el padre
+si no hay padre relativo se ajusta segun el body
+por eso puse position relative a los dos padres*/
+.slider-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease;
+}
+
+/* hago que las imagenes hereden del padre la altura y anchura asi no se deforman y lo hace responsivo
+object fit a contain hace que la imagen no se deforme y se ajuste a la altura
+object fit en cover hace que la imagen se ajuste al ancho como las portadas de facebook
+objet position es para elegir en que posicion poner la imagen con coordenadas x y
+el object fit por defecto la imagen centrada osea al 50% 50% de position, por eso le pongo
+y a 0% para que agarre desde arriba*/
+
+.slider-slide img {
+  height: inherit;
+  width: inherit;
+  object-fit: cover;
+  object-position: 50% 0%;
+}
+
+.slider-slide.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/*los botones
+les doy position absolute para que coloquen respecto al primer objeto relativo padre del dom
+que es el slider*/
+.slider-btns {
+  position: absolute;
+  /*al poner absolute pierde el ancho asi que hay que ponerlo*/
+  width: 100%;
+  top: 50%;
+  /* los alinea con display flex (flex pone los hijos en fila) */
+  display: flex;
+  /*separa los botones poniendo todo el espacio sobrante al medio*/
+  justify-content: space-between;
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.slider a {
+  display: block;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: thin solid black;
+  text-decoration: none;
+  background-color: white;
+  color: black;
+  transition: all 0.3s ease;
+}
+
+.slider a:hover {
+  color: #4d4d4d;
+}
+
+/*+++++++++++++++++++++++++++Menu del costado++++++++++++++++++++++*/
+.panel-costado {
+  position: fixed;
+  width: 30%;
+  right: 0%;
+  background-color: var(--second-color);
+  overflow-y: auto;
+  opacity: 0%;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.menu-costado {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-costado a {
+  width: inherit;
+  color: var(--main-color);
+  padding: 1rem;
+  display: block;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.menu-costado a:hover {
+  font-weight: bold;
+  color: var(--second-color);
+  background-color: var(--main-color);
+}
+
+.menu a.active {
+  color: white;
+  background-color: var(--main-color);
+}
+
+/*Hago media query directamente desde el css para practicar
+en el ejercicio 4 hice algo parecido por codigo */
+/*si la resolucion es 1024 o mas muestro el panel del costado*/
+/*ACA TAMBIEN HAGO LA DIVISION DEL CONTENIDO EN DOS COLUMNAS PARA LA RESOLUCION DE PC
+ASI SE DEBE TRABAJAR PRIMERO LA VERSION MOVIL Y DESPUES LA ESCRITORIO*/
+@media only screen and (min-width: 1024px){
+  body {
+    /*dispay en grid para trabajar como columnas*/
+    display: grid;
+    /*con grid template columns hago columnas, hice una de 80 y otra de 20*/
+    grid-template-columns: 80% 20%;
+    /*hago lo mismo con las filas, 4 rem es lo que mide la cabecera, y auto para que rellene solo lo otro*/
+    grid-template-rows: 4rem auto;
+    /*ahora para asignar esas filas y columnas a los elementos uso grid-template-areas
+    con eso puedo dibujar como van a estar rellenadas las filas y columnas con variables
+    en mi caso pongo el header en la primer fila y dos columnas
+    y pongo el main en la primer columna y el panel en la otra*/
+    grid-template-areas: 
+    "header header"
+    "main panel";
+  }
+
+  /*Ahora IMPORTANTE para que los elementos ocupen esa posicion hay que asignarle las variables de arriba
+  a los correspondientes elementos con grid-area
+  que es lo que voy a hacer ahora */
+  main {
+    grid-area: main;
+  }
+
+  .header {
+    grid-area: header;
+  }
+
+  .panel {
+    grid-area: panel;
+    position: sticky;
+    opacity: 1;
+    visibility: visible;
+    background-color: var(--second-color);
+    /* lo pongo a 4 rem para que salga despues del header */
+    top: 4rem;
+    /*y como tiene el transform hasta arriba para que no se vea se lo saco*/
+    transform: translate(0,0);
+    /*justify content y aling self y otros parecidos solo sirven con flex y grid*/
+    /*voy a poner los items al inicio arriba*/
+    justify-content: flex-start;
+    align-self: start;
+    overflow-y: auto;
+  } 
+  
+  .panel-btn{
+    /*display: none; 
+    lo hace aparecer y desaparecer de golpe por eso voy a usar
+    visibility y opacity asi aparece con trasicion*/
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .menu {
+    justify-content: start;
+    text-align: right;
+  }
+
+  .menu a {
+    font-size: 1rem;
+    padding: .75rem;
+  }
+
+  .menu a:hover {
+    color: var(--second-color);
+    background-color:var(--main-color);
+  }
+
+  /*muevo el boton*/
+  .top-btn {
+    /* con initial reinicia la propiedad al valor por defecto */
+    right: initial;
+    left: calc(4.25rem + 1vw);
+  }
+
+  .menu a.active {
+    color: white;
+    background-color: var(--main-color);
+  }
+}
+
+
+/*+++++++++++++++++++++++++++ Validacion Formulario ++++++++++++++++++++++++++++++++*/
+/* creo dos variables de color rojo y verde para el error y ok*/
+.formulario-contacto {
+  --form-ok-color: #4caf50;
+  --form-error-color: #f44336;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+/* > * significa todos los hijos directos */
+.formulario-contacto > * {
+  padding: 0.5rem;
+  margin: 1rem auto;
+  /* estan en linea inline asi hago display block para poner uno abajo de otro*/
+  display: block;
+  width: 100%;
+}
+
+/*para que no puedan cambiar el tamaño del textarea*/
+.formulario-contacto textarea {
+  resize: none;
+}
+
+
+/*estilo para el titulo y para la etiqueta de respuesta*/
+.formulario-contacto legend,
+.contact-form-response {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/*estilo para todas las letras*/
+.formulario-contacto input,
+.formulario-contacto textarea {
+  font-size: 1rem;
+  font-family: sans-serif;
+}
+
+/*estilo especifico para el boton que es un input con type submit*/
+.formulario-contacto input[type="submit"] {
+  width: 50%;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/*estilo para todos los placeholder del formulario, * significa todos*/
+.formulario-contacto *::placeholder {
+  color: black;
+}
+
+/*css tiene propiedades para la validacion de formularios
+estos son required: valid e invalid
+todo elemnto dentro de formulario-contacto que tenga el atributo required en valid*/
+.formulario-contacto [required]:valid {
+  border: thin solid var(--form-ok-color);
+}
+
+.formulario-contacto [required]:invalid {
+  border: thin solid var(--form-error-color);
+}
+
+/*para mostrar mensajes de error voy a usar SPAN dinamicamente con javascript
+los estilos que van a tener son estos
+margin-top a -1rem es para que este pegado al input*/
+.contact-form-error {
+  margin-top: -1rem;
+  font-size: 80%;
+  background-color: var(--form-error-color);
+  color: #fff;
+  transition: all 800ms ease;
+}
+
+.contact-form-error.is-active {
+  display: block;
+
+  /* lo muestro a traves de una animacion, la animacion que va a usar es show-message que yo voy a crear, 
+  va a durar 1 segundo, se va a ejecutar 1 vez de forma normal, 0s de retardo, efecto ease-out
+  both significa que va a conservar los estilos con los que la animacion termine*/
+  animation: show-message 1s 1 normal 0s ease-out both;
+}
+
+.none {
+  display: none;
+}
+
+/*la animaciones se crean con @keyframes*/
+@keyframes show-message {
+  /*desde el 0% de la animacion */
+  0% {
+    visibility: hidden;
+    opacity: 0;
+  }
+  
+  /*el 100% de la animacion*/
+  100% {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+/* ++++++++++ NARRADOR ++++++++++++++++++++++*/
+#seccion15 > * {
+  display: block;
+  padding: 0.5em auto;
+  margin: 1rem auto;
+}
+

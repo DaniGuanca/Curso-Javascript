@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Componentes con estado</title>
+</head>
+
+<body>
+  <h1>Componentes con estado</h1>
+
+  <form id="todo-form">
+    <input type="text" id="todo-item" placeholder="Tarea por hacer">
+    <input type="submit" value="Agregar">
+  </form>
+  <h2>Lista de tareas</h2>
+  <ul id="todo-list"></ul>
+
+  <script>
+
+    //ESTADO GLOBAL
+    const state = {
+      //La lista toDo como un arreglo vacio 
+      todoList: [],
+      //agrego una variable de estado sin valor para usar en algun futuro para proteger la integridad
+      nombre: ""
+    }
+
+    //TEMPLATE UI
+    const template = () => {
+      //Si la lista esta vacia
+      if (template.data.todoList.length < 1) {
+        return '<p><em>Lista sin tareas por hacer</em></p>';
+      }
+
+      let toDos = template.data.todoList.map(item => `<li>${item}</li>`).join("");
+
+      return toDos;
+    };
+
+
+    //************************************************** COMPONENTES CON ESTADO  **************************************************
+    //Para hacer un state propio de un componente es decir local voy a agregar el state al template
+    //Agregar State al Template que genera el componente de UI (State Local)
+    //EL STATE LOCAL lo voy a llamar DATA
+    //Como en JavaScript todo es un objeto puedo simplemente hacer template.data sin haberlo definido antes
+    template.data = {
+      todoList: []
+    };
+
+    //Y LISTO, AHORA template.data ES MI NUEVO STATE LOCAL, REEMPLAZO POR DONDE USABA EL GLOBAL Y TODO SIGUE FUNCIONANDO BIEN
+    //*******************************************************************************************************************************
+
+    //FUNCION RENDERIZADORA
+    const render = () => {
+      console.log(template.data);
+
+      const $list = document.getElementById("todo-list");
+
+      if (!$list) return;
+
+      $list.innerHTML = template();
+    };
+
+
+    //SET STATE
+    const setState = obj => {
+      //La funcion recibe el objeto y recorre cada llave del objeto, cuando coincide alguna llave con el state original ahí la va a asignar
+      for (let key in obj) {
+        //hasOwnProperty evalua que una llave exista dentro del objeto que llamamos la funcion, me fijo si el state tiene la llave
+        if (template.data.hasOwnProperty(key)) {
+          //Si se cumple, en el state original quiero reemplazar el valor que acompaña a la llave por el nuevo valor en esa llave
+          template.data[key] = obj[key];
+        }
+      }
+
+      //Hago el renderizado despues de que se actualizo el estado de forma reactiva
+      render();
+    };
+
+
+    //Al cargar la pagina hago el renderizado
+    document.addEventListener("DOMContentLoaded", render);
+
+    //Estableciendo valores por defecto al state
+    //Uso el setState para mandar los nuevos valores de forma reactiva
+    setState({
+      //llave : valor
+      todoList: ["Tarea 1", "Tarea 2", "Tarea 3"]
+    })
+
+    //ESTADO INMUTABLE GET STATE
+    const getState = () => JSON.parse(JSON.stringify(template.data));
+
+    const items = getState();
+    items.todoList.push("Tarea 4");
+    console.log("Estado Inmutable", template.data);
+
+    setState(items);
+
+
+
+    document.addEventListener("submit", e => {
+      //Si no es el formulario el que desencadena devuelvo false para que no haga nada
+      if (!e.target.matches("#todo-form")) return false;
+
+      //Detengo el comportamiento por default porque lo voy a controlar con javascript
+      e.preventDefault();
+
+      const $item = document.getElementById("todo-item");
+
+      //Si no existe me salgo
+      if (!$item) return;
+
+      //Actualizo el state, AHORA SI DE FORMA REACTIVA E INMUTABLE con getState para obtener el estado anterior modificarlo y actualizarlo con setState
+      const lastState = getState();
+      lastState.todoList.push($item.value);
+      setState({ todoList: lastState.todoList });
+
+
+      //Limpiar el input
+      $item.value = "";
+      //Regreso el foco al input
+      $item.focus();
+
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html data-theme lang="es">
+<!-- VOY A HACER UN DISEÑO DE DOS FILAS Y DOS COLUMNAS EN EL CSS
+LA PRIMER FILA ES LA CABECERA
+LA SEGUNDA FILA TODO EL CONTENIDO DIVIDIDO EN LAS DOS COLUMNAS
+LA PRIMER COLUMNA VA A TENER TODO EL CONTENIDO PRINCIPAL
+Y LA SEGUNDA COLUMNA QUE VA A SER UN 20% VA A TENER EL PANEL DE COSTADO CUANDO LA 
+RESOLUCION DE PANTALLA ES MAYOR A 1024, SINO SALE EL MENU HABURGUESA
+CUALQUIER COSA EN EL EXCEL ESTA EL DISEÑO-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicios Dom</title>
+    <!--El cdn del boton hamburguer-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.1.3/hamburgers.min.css" integrity="sha512-+mlclc5Q/eHs49oIOCxnnENudJWuNqX5AogCiqRBgKnpoplPzETg2fkgBFVC6WYUVxYYljuxPNG8RE7yBy1K+g==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <div id="tope"></div>
+
+    <header class="header">
+        <h1>Ejercicios del DOM</h1>
+    </header>
+    
+    <button id="panel-btn" class="panel-btn hamburger hamburger--vortex" type="button">
+        <span class="hamburger-box">
+          <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <button class="top-btn hidden">&#11014;</button>
+    <button class="theme-btn"></button>
+
+    <!--El aside va a representar el menu que sale de arriba y el menu de costado en escritorio-->
+    <!-- a todos los enlaces le creo un data atribute personalizado paara usar en el scrollSpy
+        que se va a llamar data-scroll-spy-->
+    <aside class="panel">
+        <!--En el nav generalmente se ponen los enlaces
+        por eso se llama nav, menu de navegacion-->
+        <nav class="menu">
+            <!--Forma abreviada para escribir todo lo de abajo:
+                a[href=#seccion$]*5{Seccion $}-->
+            <a href="#seccion1" data-scroll-spy>Reloj Digital y Alarma Sonora</a>
+            <a href="#seccion2" data-scroll-spy>Eventos de Teclado</a>
+            <a href="#seccion3" data-scroll-spy>Countdown</a>
+            <a href="#seccion4" data-scroll-spy>Responsive con Javascript</a>
+            <a href="#seccion5" data-scroll-spy>Responsive Tester</a>
+            <a href="#seccion6" data-scroll-spy>Deteccion de Dispositivios (User Agents)</a>
+            <a href="#seccion7" data-scroll-spy>Deteccion de la Conexion</a>
+            <a href="#seccion8" data-scroll-spy>Deteccion de la Camara Web</a>
+            <a href="#seccion9" data-scroll-spy>Geolocalizacion</a>
+            <a href="#seccion10" data-scroll-spy>Filtro de Busqueda</a>
+            <a href="#seccion11" data-scroll-spy>Sorteo Digital</a>
+            <a href="#seccion12" data-scroll-spy>Slide Responsivo</a>
+            <a href="#seccion13" data-scroll-spy>Video Inteligente</a>
+            <a href="#seccion14" data-scroll-spy>Formulario de Contacto (Validaciones)</a>
+            <a href="#seccion15" data-scroll-spy>Narrador</a>
+        </nav>
+    </aside>
+
+
+    <!--La etiqueta menu representa el mun principal el contenido principal-->
+    <!--a cada seccion tambien le pongo el data atribute para usarlo con scrollSpy
+        que se va a llamar data-scroll-spy-->
+    <main>
+        <section id="seccion1" class="Section" data-scroll-spy>
+            <h2>Reloj Digital y Alarma Sonora</h2>
+            <button class="btn-iniReloj">Iniciar Reloj</button>
+            <button class="btn-detReloj">Detener Reloj</button>
+            <button class="btn-iniAlarma">Iniciar Alarma</button>
+            <button class="btn-detAlarma">Detener Alarma</button>
+        </section>
+        <section id="seccion2" class="Section" data-scroll-spy>
+            <h2>Eventos de Teclado</h2>
+            <article class="fondoEventoTeclado">
+                <div class="circulo"></div>
+            </article>
+        </section>
+        <section id="seccion3" class="Section" data-scroll-spy>
+            <h2>Countdown</h2>
+            <h3 class="countdown">
+                <div class="reloj">DEMO</div>
+            </h3>
+        </section>
+        <section id="seccion4" class="Section" data-scroll-spy>
+            <h2>Responsive con Javascript</h2>
+            <div id="youtube"></div>
+            <div id="gmaps"></div>
+        </section>
+        <section id="seccion5" class="Section" data-scroll-spy>
+            <h2>Responsive Tester</h2>
+            <form action="" id="responsive-tester">
+                <input type="text" name="direccion" placeholder="URL" required>
+                <br>
+                <input type="text" name="ancho" placeholder="Ancho" required>
+                <br>
+                <input type="text" name="alto" placeholder="Alto" required>
+                <br>
+                <!-- en formulario a los botones tambien puedo hacerlo con etiqueta input
+                    hay que especificar el type submit o boton !-->
+                <input name="probar" type="submit" value="Probar">
+                <input name="cerrar" type="button" value="Cerrar">
+            </form>         
+        </section>
+        <section id="seccion6" class="Section" data-scroll-spy>
+            <h2>Deteccion de Dispositivios <br> (User Agent)</h2>
+            <div id="user-device"></div>
+        </section>
+        <section id="seccion7" class="Section" data-scroll-spy>
+            <h2>Deteccion de la conexion</h2>
+        </section>
+        <section id="seccion8" class="Section" data-scroll-spy>
+            <h2>Deteccion de Camara Web</h2>
+            <br>
+            <video id="videoCam"></video>
+        </section>
+        <section id="seccion9" class="Section" data-scroll-spy>
+            <h2>Geolocalizacion</h2>
+            <br>
+            <div id="latitud"></div>
+            <div id="longitud"></div>
+            <div id="precision"></div>
+            <a href="" id="linkMaps">Ver en maps</a>
+        </section>
+        <section id="seccion10" class="Section" data-scroll-spy>
+            <h2>Filtro de Busqueda</h2>
+            <br>
+            <input id="filtro" placeholder="buscar" type="search" class="card-filter">
+            <article class="cards">
+                <figure class="card">
+                    <img src="https://placeimg.com/200/200/tech" alt="Tech">
+                    <figcaption>Tech</figcaption>
+                </figure>
+        
+                <figure class="card">
+                    <img src="https://placeimg.com/200/200/animals" alt="Animals">
+                    <figcaption>Animals</figcaption>
+                </figure>
+        
+                <figure class="card">
+                    <img src="https://placeimg.com/200/200/people" alt="People">
+                    <figcaption>People</figcaption>
+                </figure>
+        
+                <figure class="card">
+                    <img src="https://placeimg.com/200/200/music" alt="Music">
+                    <figcaption>Music</figcaption>
+                </figure>
+        
+                <figure class="card">
+                    <img src="https://placeimg.com/200/200/nature" alt="Nature">
+                    <figcaption>Nature</figcaption>
+                </figure>
+            </article>
+        </section>
+
+        <section id="seccion11" class="Section" data-scroll-spy>
+            <h2>Sorteo Digital</h2>
+            <ul>
+                <li class="elemento-sorteo">Javascript</li>
+                <li class="elemento-sorteo">PHP</li>
+                <li class="elemento-sorteo">C#</li>
+                <li class="elemento-sorteo">JAVA</li>
+                <li class="elemento-sorteo">PYTHON</li>
+                <li class="elemento-sorteo">RUBY</li>
+                <li class="elemento-sorteo">GO</li>
+                <li class="elemento-sorteo">VISUAL BASIC</li>
+                <li class="elemento-sorteo">RUST</li>
+                <li class="elemento-sorteo">PERL</li>
+            </ul>
+            <button id="obtenerGanador">Obtener Ganador</button>
+
+        </section>
+
+        <section id="seccion12" class="Section" data-scroll-spy>
+            <h2>Slide Responsivo</h2>
+
+            <!--Slider es el contenedor del slider, slider-btns son los botones
+            slider-slides va a contener a todas las slides osea imagenes
+            slider-slide es una slide individual o imagen
+            a la slide que se muestre primero le pongo active, despues manejo por codigo 
+            sacandole o poniendole la clase-->
+            <div class="slider">
+                <div class="slider-slides">
+                    <div class="slider-slide active">
+                        <img src="https://placeimg.com/400/400/animals" alt="Animals">
+                    </div>
+                    <div class="slider-slide">
+                        <h4>Diapositiva 2</h4>
+                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
+                            Ipsam voluptas sit necessitatibus, mollitia quod rem? Nobis dolore adipisci 
+                            dolorum voluptate architecto, repellendus cupiditate minus ipsum eveniet, 
+                            ut porro ipsam rem!</p>
+                    </div>
+                    <div class="slider-slide">
+                        <img src="https://placeimg.com/400/400/nature" alt="Nature">
+                    </div>
+                    <div class="slider-slide">
+                        <h4>Diapositiva 4</h4>
+                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
+                            Iure nostrum animi repudiandae! Ea maxime perspiciatis dignissimos aut modi 
+                            facere, nisi incidunt odit fugit aperiam. Soluta commodi asperiores excepturi. 
+                            Perspiciatis, hic.</p>
+                    </div>
+                </div>
+
+                <div class="slider-btns">
+                    <a class="prev" href="#">&laquo;</a>
+                    <a class="next" href="#">&raquo;</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="seccion13" class="Section" data-scroll-spy>
+            <h2>Video Inteligente</h2>
+
+            <div class="contenedor-video">
+                <!-- pongo muted para que se reproduzca en silencio asi no jode al usuario
+                loop sirve para que se haga bucle, esta bueno para videos cortos como fondo
+                trabajo con data atribute (data-video-inteligente) asi se parece a bootrap y eso
+                MIRCHA no se dio cuenta del error de playstate asi que lo hago yo 
+                creando un data atribute data-playState en el script-->
+                <video src="../media/videoWade.mp4" data-video-inteligente controls muted loop></video>
+            </div>
+            
+        </section>
+
+        <section id="seccion14" class="Section" data-scroll-spy>
+            <h2>Formulario de Contacto (Validaciones)</h2>
+            <br>
+            <!-- el action formSubmit es de una pagina que te permite enviar mail sin programar-->
+            <form class="formulario-contacto" action="https://formsubmit.co/dany12rp13@gmail.com" 
+            method="POST" target="_blank">
+
+                <!-- Legend sirve como titulos dentro de formulario-->
+                <legend>Envianos tus comentarios</legend>
+
+                <!-- Con el atributo title pongo el mensaje cuando no se cumple una validacion
+                El atributo pattern permite usar EXPRESIONES REGULARES por lo tanto puedo
+                VALIDAR LOS CAMPOS desde el html poniendo la expresion regular en el atributo pattern-->
+                <input type="text" name="name" placeholder="Escribe tu nombre" 
+                title="Nombre solo acepta letras y espacios en blanco" 
+                pattern="^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$" required>
+
+                <input type="mail" name="email" placeholder="Escribe tu mail" 
+                title="Email incorrecto" 
+                pattern="^[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,15})$" 
+                required>
+
+                <input type="text" name="_subject" placeholder="Asunto a tratar" 
+                title="El asunto es requerido" required>
+
+                <!-- textarea no admite el atributo pattern, asi que invento un data atribute
+                data-pattern con lo que quiero validar y lo trabajo desde javascript-->
+                <textarea name="message" cols="50"  rows="5" placeholder="Escribe tus comentarios"
+                title="Tu comentario no debe exceder los 255 caracteres"
+                data-pattern="^.{1,255}$" 
+                required></textarea>
+
+                <input type="submit">
+
+                <!-- esto es una imagen sale mientras manda el formulario
+                la clase none es para ocultar-->                
+                <div class="contact-form-loader none">
+                    <img src="../media/loader.svg" alt="Cargando">
+                </div>
+                <!-- la respuesta a la peticion como estoy simulando un envio lo pongo asi
+                pero en realidad se hace ajax y se pone la respuesta del servidor-->
+                <div class="contact-form-response none">
+                    <p>Los datos han sido enviados</p>
+                </div>
+            </form>
+        </section>
+
+        <section id="seccion15" class="Section" data-scroll-spy>
+            <h2>Narrador</h2>
+
+            <select class="select-narrador"> 
+                <option selected value="0">Elige una opcion</option>
+            </select>
+
+            <textarea id="texto-narrador" cols="50" rows="5" placeholder="Ingresa tu texto para leerlo"></textarea>
+
+            <button id="btn-leer-texto">Leer Texto</button>
+        </section>
+    </main>
+    
+    <!-- voy a trabajar con modulos asi que le especifico el type module-->
+    <script src="../static/script/index_dom.js" type="module"></script>
+</body>
+</html>

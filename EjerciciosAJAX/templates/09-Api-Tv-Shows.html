@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Shows de TV</title>
+    <style>
+        .grid-fluid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+            text-align: center;
+        }
+
+        .loader{
+            display: block;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Buscador de Shows de TV</h1>
+    <input type="search" id="search" placeholder="Buscar shows de tv..." autocomplete="off">
+    <section id="shows" class="grid-fluid"></section>
+    <template id="show-template">
+        <article class="show">
+            <h3></h3>
+            <div></div>
+            <img>
+            <a></a>
+        </article>
+    </template>
+    
+    <script>
+        const $shows = document.getElementById('shows');
+        const $template = document.getElementById('show-template').content;
+        const $fragment = document.createDocumentFragment();
+
+        document.addEventListener('keypress', async e => {
+            if(e.target.matches("#search")){
+               //keyCode 13 es enter, tambien puede ser e.key == "Enter"
+                if(e.keyCode === 13){
+                    try{
+                        $shows.innerHTML = `<img class="loader" src="../media/loader.svg" alt="cargando...">`;
+
+                        let query = e.target.value.toLowerCase();
+                        let api = `http://api.tvmaze.com/search/shows?q=${query}`;
+
+                        let response = await fetch(api);
+                        let json = await response.json();
+
+                        if(!response.ok) throw {status: response.status, statusText: response.statusText};
+
+                        if(json.length === 0){
+                            $shows.innerHTML = `<h2>No existe resultados de busqueda para el show: ${query}`;
+                        }else{
+
+                            json.forEach(element => {
+                                $template.querySelector("h3").textContent = element.show.name;
+
+                                $template.querySelector("div").innerHTML = element.show.summary ? 
+                                    element.show.summary : "Sin descripcion";
+                                    
+                                $template.querySelector("img").src = element.show.image ? 
+                                    element.show.image.medium : "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
+
+
+                                $template.querySelector("img").alt = element.show.name;
+                                $template.querySelector("img").style.maxWidth = "100%";
+
+                                $template.querySelector("a").href = element.show.url ? element.show.url : "#";
+                                $template.querySelector("a").target = element.show.url ? "blank" : "_self";
+                                $template.querySelector("a").textContent = element.show.url ? "Ver más..." : "";
+
+                                let $clone = document.importNode($template,true);
+                                $fragment.appendChild($clone);
+                            });
+
+                            //para sacar el loader
+                            $shows.innerHTML = "";
+                            $shows.appendChild($fragment);
+                           
+                        }
+                        
+                    }catch (error) {
+                        console.log(error);
+                        let message = error.statusText || "Ocurrio un error";
+                        $shows.innerHTML = `<p> Error ${error.status}: ${message}</p>`;
+                    }
+                }
+            }
+
+        });
+    </script>
+
+</body>
+
+</html>

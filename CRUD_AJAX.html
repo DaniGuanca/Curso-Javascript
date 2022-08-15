@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD API REST AJAX xmlHttpRESPONSE</title>
+</head>
+<body>
+    <h1>CRUD API REST AJAX xmlHttpRESPONSE</h1>
+
+    <section class="crud">
+        <article>
+            <h2 class="crud-title">Agregar All-Star</h2>
+            <form action="" class="crud-form">
+                <input type="text" name="nombre" placeholder="nombre" required>
+                <br>
+                <input type="text" name="numero" placeholder="numero" required>
+                <br>
+                <input type="submit" value="Enviar">
+                <!-- los input type hidden no se ven 
+                este input es para cuando procese el formulario haga la accion que mande -->
+                <input type="hidden" name="id">
+            </form>
+        </article>
+
+        <!-- VOY A MOSTRAR LOS DATOS EN UNA TABLA Y AGREGAR LAS ACCIONES ELIMINAR O EDITAR EN LA CELDA -->
+        <article>
+            <h2>Ver All-Stars</h2>
+            <table class="crud-table">
+                <!-- thead es titulares o zona de cabecera -->
+                <thead>
+                    <!-- tr es una fila -->
+                    <tr>
+                        <!-- th es una cabecera -->
+                        <th>Nombre</th>
+                        <th>Numero</th>
+                        <th>Acciones</th>                        
+                    </tr>                    
+                </thead>
+                <!-- tbody es el cuerpo de la tabla -->
+                <tbody></tbody>
+            </table>
+        </article>
+    </section>
+
+    <!-- como los datos de la tabla los voy a generar dinamicamente voy a necesitar un plantilla modelo
+    del diseño de la tabla y esa plantilla la hago en la etiqueta template para despues usarla
+    para rellenar la tabla dinamicamente en su tbody -->
+    <!-- los templates no se muestran -->
+    <template id="crud-template">
+        <tr>
+            <!-- td es una celda -->
+            <td class="name"></td>
+            <td class="number"></td>
+            <!-- en esta celda voy a poner los botones para editar y eliminar -->
+            <td>
+                <button class="btnEdit">Editar</button>
+                <button class="btnDelete">Eliminar</button>
+            </td>
+        </tr>
+    </template>
+
+    <!-- por practicidad voy a trabajar los scritps en el mismo html -->
+    <script>
+        //DATA ATTRIBUTES SE MANEJAN CON DATASET
+
+        const $table = document.querySelector(".crud-table"),
+         $form = document.querySelector(".crud-form"),
+         $title = document.querySelector(".crud-title"),
+         //del template no me interesa su selector sino su estructura
+         $template = document.getElementById("crud-template").content,
+         $fragment = document.createDocumentFragment();
+
+        //esto es como una forma general de usar ajax para poder reutilizar
+        //la programacion misma para el caso se hace en las funciones succes y error del objeto options
+        const ajax = (options) => {
+            //destructuro options en varios elementos (antes deberia validar que es objeto valido
+            //pero por falta de tiempo mircha no lo hace)
+            //url: de donde le hacemos la operacion a los datos
+            //method: que metodo usamos get post put o delete
+            //success: funciones para ejecutar en caso de exito y error para manejar el error
+            //data: los datos que vamos a mandar si es necesario
+            let {url,method,success,error,data} = options;
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.addEventListener("readystatechange", e => {
+                if(xhr.readyState !== 4) return;
+
+                if(xhr.status <= 200 && xhr.status < 300) {
+                    let json = JSON.parse(xhr.responseText);
+                    //mando el json a la funcion succes donde voy a trabajar
+                    success(json);
+                }else{
+                    let message = xhr.statusText || "Ocurrion un error";
+                    //mando codigo de error y el mensaje para trabajar el error
+                    error(`Error ${xhr.status}: ${message}`);
+                }
+ 
+            });
+
+            //si no indica el methodo que haga get
+            xhr.open(method || "GET", url); 
+            //en insomia se puede ver que la cabecera dice esto: application/json
+            //que quiere decir el tipo de dato que esta esperando en este caso json
+            //si no especificas que es json lo toma como texto plano que esta MAL ERROR
+            //para poner cabecera con xhr se usa setRequestHeader
+            xhr.setRequestHeader("Content-type","application/json; charset=utf-8");
+
+            //cuando obtenemos datos con get hay que pasarlos a JSON porque vienen en cadena de texto
+            //para enviar datos se hace lo contrario, transformar el json en cadena de texto con stringify
+            //cuando quiera hacer get directamente omito data o envio null porque no se usa
+            xhr.send(JSON.stringify(data));
+        }
+
+         
+
+        //LA TEORIA Y COMO USAR LOS TEMPLATES ESTAN EN 69DOMtemplates.js
+
+        //ahora si empiezo a programar, se tiene que activar a la carga del dom
+        //getAll va a ser el GET
+        const getAll = () => {
+            //llamo a la funcion ajax y escribo el objeto option que va a pedir
+            //no olvidar que el succes recibe los datos en json, por eso digo que recibe res
+            //y el error recibe un string, asi que pongo que recibe err
+            ajax({
+                url: 'http://localhost:5555/all-stars',
+                success: (res) => {
+                    res.forEach(element => {
+                        //agarro el template y saco sus componentes con querySelector para asignarle los valores del elemento
+                        $template.querySelector(".name").textContent = element.nombre;
+                        $template.querySelector(".number").textContent = element.numero;
+
+                        //al boton editar le voy a crear data atributes para cuando
+                        //haga click al boton lleve los datos al formulario
+                        //para crear dataatributes se pone .dataset seguido de .nombre que quiero
+                        $template.querySelector(".btnEdit").dataset.id = element.id;
+                        $template.querySelector(".btnEdit").dataset.name = element.nombre;
+                        $template.querySelector(".btnEdit").dataset.number = element.numero;
+                        //para el boton eliminar solo me interesa el id porque es el endpoint
+                        $template.querySelector(".btnDelete").dataset.id = element.id;
+
+                        //ahora clono el template para tener uno para cada valor sino estaria sobreescribiendo
+                        //para clonar se una el metodo importNode, el elemento a clonar y el booleano en true para que incluya el contenido
+                        //en false seria vacio
+                        let $clone = document.importNode($template,true);
+                        
+                        $fragment.appendChild($clone);
+                    });
+
+                    //busco el tbody de la tabla y le inserto el fragmento
+                    $table.querySelector("tbody").appendChild($fragment);
+                },
+                error: (err) => {
+                    console.log(err);
+                    //agrego debajo de la tabla un parrafo en negrita con el mensaje de error
+                    $table.insertAdjacentHTML("afterend",`<p><b>${err}</b></p>`);
+                }
+            });
+        };
+
+
+
+        document.addEventListener("DOMContentLoaded",getAll);
+
+        document.addEventListener("submit",e=>{
+            if(e.target === $form){
+                //prevengo el comportamiento por defecto porque lo voy a hacer por ajax
+                e.preventDefault();
+
+                //Ahora el input hidden con name=id que hice va a servir para saber que hacer
+                //si esta vacion yo voy a hacer POST
+                //si tiene algo entonces es PUT
+                if(!e.target.id.value){
+                    //POST - Create
+                    ajax({
+                        method: "POST",
+                        url: 'http://localhost:5555/all-stars',
+                        //simplemente recargo la pagina para que muestre todo incluido lo nuevo
+                        success: (res) => location.reload(),
+                        error: (err) => $form.insertAdjacentHTML("afterend",`<p><b>${err}</b></p>`),
+                        data:{
+                            nombre: e.target.nombre.value,
+                            numero: e.target.numero.value
+                        }
+                    });
+                }else{
+                    //PUT - Update
+                    ajax({
+                        method:"PUT",
+                        //los endpoints de los json server de un objeto terminan en su id
+                        //osea servidor/tabla/id-del-dato
+                        url: `http://localhost:5555/all-stars/${e.target.id.value}`,
+                        success: (res) => location.reload(),
+                        error: (err) => $form.insertAdjacentHTML("afterend",`<p><b>${err}</b></p>`),
+                        data:{
+                            nombre: e.target.nombre.value,
+                            numero: e.target.numero.value
+                        }
+                    })
+                }
+            }
+        });
+
+        //BOTONES UPDATE Y METODO DELETE
+        document.addEventListener("click", e => {
+            if (e.target.matches(".btnEdit")){
+                //los datos los guarde en data attributes de los botones
+                //paso datos al formulario
+                $title.textContent = "Editar All-Star";
+                $form.nombre.value = e.target.dataset.name;
+                $form.numero.value = e.target.dataset.number;
+                //al asignarle valor al dataset id cuando haga el sumbit va a entrar por else que hice
+                //que hace la modificacion con PUT
+                $form.id.value = e.target.dataset.id;
+            }
+
+            if(e.target.matches(".btnDelete")){
+                //METODO ELIMINAR
+                let isDelete = confirm(`Estas seguro de eliminarl el elemento con id: ${e.target.dataset.id}?`);
+                if (isDelete){
+                    ajax({
+                    method: "DELETE",
+                    url : `http://localhost:5555/all-stars/${e.target.dataset.id}`,
+                    success: (res) => location.reload(),
+                    error: (err) => alert(err),
+                    });
+                }                
+            }
+        })
+
+    </script>
+    
+</body>
+</html>

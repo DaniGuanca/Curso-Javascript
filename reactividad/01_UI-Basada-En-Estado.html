@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interfaz de Usuario basada en el estado</title>
+</head>
+
+<body>
+  <!--****************** IMPORTANTE ***************************************
+      Este ejercicio es el mismo que al anterior pero este SI ES CON REACTIVIDAD ahora vamos
+      a ver las diferencias -->
+
+  <h1>Interfaz de Usuario basada en el estado</h1>
+
+  <form id="todo-form">
+    <input type="text" id="todo-item" placeholder="Tarea por hacer">
+    <input type="submit" value="Agregar">
+  </form>
+  <h2>Lista de tareas</h2>
+  <ul id="todo-list"></ul>
+
+  <script>
+
+    //PARA HACER REACTIVO
+    //1° Hay que declarar la variable para implementar el estado o state como lo conocen en los frameworks
+    //State va a ser un objeto en el que cada uno de los atributos es un estado que quisieramos controlar
+    const state = {
+      //La lista toDo como un arreglo vacio 
+      todoList: []
+    }
+
+    //2° Hay que tener un mecanismo que genere la INTERFAZ BASADA EN EL ESTADO es decir un TEMPLATE html
+    //Template UI, este template lo que va a hacer es generar una li por cada elemento que entre al todoList del ESTADO
+    const template = () => {
+      //Si la lista esta vacia
+      if (state.todoList.length < 1) {
+        return '<p><em>Lista sin tareas por hacer</em></p>';
+      }
+
+      //Si si tiene elementos renderizo cada uno en un li
+      //Lo que hace map lo tengo en un txt explicado, basicamente a partir de un arreglo crea otro aplicando la funcion que le pase
+      //a cada elemento del arreglo
+      //Como por cada elemento genera una coma y se muestra en la UI lo que hago es aplicar join para junte todos los valores en un
+      //string entonces ya no van a haber comas
+      let toDos = state.todoList.map(item => `<li>${item}</li>`).join("");
+
+      //Devuelvo el nuevo arreglo
+      return toDos;
+    };
+    //LISTO LA FUNCION DE ARRIBA ES LA GENERA LA UI BASADA EN EL ESTADO
+
+
+    //3° Hay que hacer la funcion RENDER que haga el renderizado de la interfaz UI, es la que va a ir pintando en pantalla los cambios
+    //Va pintando la interfaz en base a los cambios del estado
+    //como si fuera un appendChild
+    const render = () => {
+      console.log(state);
+
+      //Agarro el elemento del DOM y lo guardo en variable
+      const $list = document.getElementById("todo-list");
+
+      if (!$list) return;
+
+      //Mircha por temas de practicidad va a meter todo por innerHTML, pero tambien se podria hacer templates o insertAdjacent
+      //La funcion template me devuelve una lista de li's por cada item del estado.
+      $list.innerHTML = template();
+
+    };
+
+    //Al cargar la pagina hago el renderizado
+    document.addEventListener("DOMContentLoaded", render);
+
+
+
+    document.addEventListener("submit", e => {
+      //Si no es el formulario el que desencadena devuelvo false para que no haga nada
+      if (!e.target.matches("#todo-form")) return false;
+
+      //Detengo el comportamiento por default porque lo voy a controlar con javascript
+      e.preventDefault();
+
+      const $item = document.getElementById("todo-item");
+
+      //Si no existe me salgo
+      if (!$item) return;
+
+      //1° Actualizo el state, acá le estoy pegando directamente al state y eo no esta bien visto, en el siguiente video lo revisa bien
+      state.todoList.push($item.value);
+
+      //2° Actualizo la UI llamando al render
+      render();
+
+      //Limpiar el input
+      $item.value = "";
+      //Regreso el foco al input
+      $item.focus();
+
+    });
+
+    //Y LISTO SI TE FIJAS POR CADA ACTUALIZACION DEL ESTADO SE HACE UN RENDERIZADO
+    //CAMBIO DE UI SEGUN EL ESTADO
+
+    //ACLARO TODAVIA NO ES REACTIVO, VA POR EL CAMINO PERO FALTA UNAS COSITAS, PORQUE EN ESTE EJERCICIO ESTOY MODIFICANDO EL ESTADO
+    //DIRECTAMENTE Y ESO NO SE TENDRIA QUE HACER
+    //HAY QUE HACER REACTIVO EL ESTADO PARA QUE SEA COMPLETAMENTE REACTIVO, ESO EN EL SIGUIENTE EJERCICIO
+  </script>
+</body>
+
+</html>

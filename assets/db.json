@@ -1,0 +1,51 @@
+{
+  "all-stars": [
+    {
+      "id": 1,
+      "nombre": "LeBron James",
+      "numero": "23"
+    },
+    {
+      "id": 2,
+      "nombre": "Dwyane Wade",
+      "numero": "3"
+    },
+    {
+      "id": 3,
+      "nombre": "Russell Westbrook",
+      "numero": "0"
+    },
+    {
+      "id": 4,
+      "nombre": "Michael Jordan",
+      "numero": "23"
+    },
+    {
+      "id": 5,
+      "nombre": "Charles Barkley",
+      "numero": "34"
+    }
+  ],
+  "equipos": [
+    {
+      "id": 1,
+      "nombre": "Heat",
+      "ciudad": "Miami"
+    },
+    {
+      "id": 2,
+      "nombre": "Lakers",
+      "ciudad": "Los Angeles"
+    },
+    {
+      "id": 3,
+      "nombre": "Cavaliers",
+      "ciudad": "Cleveland"
+    },
+    {
+      "id": 4,
+      "nombre": "Bulls",
+      "ciudad": "Chicago"
+    }
+  ]
+}

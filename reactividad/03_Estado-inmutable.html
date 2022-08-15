@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estado inmutable</title>
+</head>
+
+<body>
+  <h1>Estado inmutable</h1>
+
+  <form id="todo-form">
+    <input type="text" id="todo-item" placeholder="Tarea por hacer">
+    <input type="submit" value="Agregar">
+  </form>
+  <h2>Lista de tareas</h2>
+  <ul id="todo-list"></ul>
+
+  <script>
+
+    //PARA HACER REACTIVO
+    //1° Hay que declarar la variable para implementar el estado o state como lo conocen en los frameworks
+    //State va a ser un objeto en el que cada uno de los atributos es un estado que quisieramos controlar
+    const state = {
+      //La lista toDo como un arreglo vacio 
+      todoList: [],
+      //agrego una variable de estado sin valor para usar en algun futuro para proteger la integridad
+      nombre: ""
+    }
+
+    //2° Hay que tener un mecanismo que genere la INTERFAZ BASADA EN EL ESTADO es decir un TEMPLATE html
+    //Template UI, este template lo que va a hacer es generar una li por cada elemento que entre al todoList del ESTADO
+    const template = () => {
+      //Si la lista esta vacia
+      if (state.todoList.length < 1) {
+        return '<p><em>Lista sin tareas por hacer</em></p>';
+      }
+
+      //Si si tiene elementos renderizo cada uno en un li
+      //Lo que hace map lo tengo en un txt explicado, basicamente a partir de un arreglo crea otro aplicando la funcion que le pase
+      //a cada elemento del arreglo
+      //Como por cada elemento genera una coma y se muestra en la UI lo que hago es aplicar join para junte todos los valores en un
+      //string entonces ya no van a haber comas
+      let toDos = state.todoList.map(item => `<li>${item}</li>`).join("");
+
+      //Devuelvo el nuevo arreglo
+      return toDos;
+    };
+    //LISTO LA FUNCION DE ARRIBA ES LA GENERA LA UI BASADA EN EL ESTADO
+
+
+    //3° Hay que hacer la funcion RENDER que haga el renderizado de la interfaz UI, es la que va a ir pintando en pantalla los cambios
+    //Va pintando la interfaz en base a los cambios del estado
+    //como si fuera un appendChild
+    const render = () => {
+      console.log(state);
+
+      //Agarro el elemento del DOM y lo guardo en variable
+      const $list = document.getElementById("todo-list");
+
+      if (!$list) return;
+
+      //Mircha por temas de practicidad va a meter todo por innerHTML, pero tambien se podria hacer templates o insertAdjacent
+      //La funcion template me devuelve una lista de li's por cada item del estado.
+      $list.innerHTML = template();
+
+    };
+
+
+    //ACTUALIZAR EL ESTADO DE FORMA REACTIVA
+    //AHORA SI NO LO VOY A TOCAR DIRECTAMENTE SINO QUE A TRAVEZ DE UNA FUNCION
+    //Hago el metodo setState para actualizar el estado, este se usa mucho en framworks
+    const setState = obj => {
+      //La funcion recibe el objeto y recorre cada llave del objeto, cuando coincide alguna llave con el state original ahí la va a asignar
+      for (let key in obj) {
+        //hasOwnProperty evalua que una llave exista dentro del objeto que llamamos la funcion, me fijo si el state tiene la llave
+        if (state.hasOwnProperty(key)) {
+          //Si se cumple, en el state original quiero reemplazar el valor que acompaña a la llave por el nuevo valor en esa llave
+          state[key] = obj[key];
+        }
+      }
+
+      //Hago el renderizado despues de que se actualizo el estado de forma reactiva
+      render();
+    };
+
+
+    //Al cargar la pagina hago el renderizado
+    document.addEventListener("DOMContentLoaded", render);
+
+    //Estableciendo valores por defecto al state
+    //Uso el setState para mandar los nuevos valores de forma reactiva
+    setState({
+      //llave : valor
+      todoList: ["Tarea 1", "Tarea 2", "Tarea 3"],
+      //Agrego una propiedad que no existe en el estado original para ver que la ignora porque no esta la llave
+      //Entonces es recomendable al momento de declarar el estado poner todas las posibles variables que vayan a utilizarse asi no se ignoran en el futuro, hay que definirla aunque no tenga valor.
+      nombre: "Dani"
+    })
+
+    //*********************************************** HAGO QUE EL ESTADO SEA INMUTABLE *****************************************************
+    //Primero obtengo una copia inmutable del estado, pero quiero que sea una copia independiente
+    //Para que sea independiente me mando el siguiente trucazo, paso el state a Json con stringify y despues lo vuelvo a convertir en objeto con JSON parse. Al hacer el stringify pierde la vinculacion y al hacer el parse es un objeto totalmente nuevo, una copia independiente
+    const getState = () => JSON.parse(JSON.stringify(state));
+
+    //Ahora ya puedo de forma inmutable actualizar el estado
+    //Llamo el estado anterior y hago la actualizacion
+    const items = getState();
+    items.todoList.push("Tarea 4");
+    console.log("Estado Inmutable", state);
+    //Al hacer todo esto se ve que no se agrega al estado la tarea 4 porque modifico la copia independiete, ya dejo de se mutable ahora es INMUTABLE, la unica forma de hacer la actualizacion ahora es con el setState y asi es como debe funcionar
+    setState(items);
+    //***************************************************** END ******************************************************************************
+
+
+    document.addEventListener("submit", e => {
+      //Si no es el formulario el que desencadena devuelvo false para que no haga nada
+      if (!e.target.matches("#todo-form")) return false;
+
+      //Detengo el comportamiento por default porque lo voy a controlar con javascript
+      e.preventDefault();
+
+      const $item = document.getElementById("todo-item");
+
+      //Si no existe me salgo
+      if (!$item) return;
+
+      //Actualizo el state, AHORA SI DE FORMA REACTIVA E INMUTABLE con getState para obtener el estado anterior modificarlo y actualizarlo con setState
+      const lastState = getState();
+      lastState.todoList.push($item.value);
+      setState({ todoList: lastState.todoList });
+
+
+      //Limpiar el input
+      $item.value = "";
+      //Regreso el foco al input
+      $item.focus();
+
+    });
+
+//*********************************************************** IMPORTANTE ********************************************************************
+//ESTAMOS TOCANDO UN ESTADO GLOBAL, PERO CADA COMPONENTE PUEDE TENER SU PROPIO ESTADO ES DECIR UNO LOCAL EN EL EJERCICIO DEL SIGUIENTE VIDEO VAMOS A HACER QUE MANEJE UN ESTADO LOCAL
+//********************************************************************************************************************************************
+  </script>
+</body>
+
+</html>

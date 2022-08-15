@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploader con AJAX</title>
+    <style>
+        html {
+            box-sizing: border-box;
+            font-family: sans-serif;
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
+        main {
+            display : flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        progress {
+            margin-top :1rem;
+        }
+
+    </style>
+</head>
+<body>
+    <main>
+        <!-- con multiple permito que suba varios archivos
+        no uso formulario porque la api que voy a usar te permite subir archivo sin formulario -->
+        <input type="file" id="files" name="files" multiple>
+    </main>    
+
+    <script>
+        $main = document.querySelector("main");
+        $files = document.getElementById("files");
+
+        const uploader = (file) =>{
+            //console.log(file);
+            const xhr = new XMLHttpRequest();
+            //como no tengo formulario hago uno con FormData
+            const formData = new FormData();
+            //este objeto recibe un formulario, pero como yo no tengo uno le voy creando uno con append
+            //estoy creandole un dato con name file y el objeto file
+            formData.append("file", file);
+
+            xhr.addEventListener("readystatechange", e => {
+
+              if (xhr.readyState !== 4) return;
+              
+              if(xhr.status !== 200>= 200 && xhr.status < 300) {
+                let json = JSON.parse(xhr.responseText);
+
+                console.log(json);
+
+              }else{
+                let message = xhr.statusText || "Ocurrio un error";
+                console.log(`Error ${xhr.status}: ${message}`);
+              }
+            });
+
+            xhr.open("POST","../assets/uploader.php");
+            //la cabecera tiene que decir que tambien voy a estar enviando archivos binarios
+            xhr.setRequestHeader("enc-type", "multipart/form-data");
+            xhr.send(formData);
+        }
+
+        //aca creo la funcion que va a mostrar la barra de progreso por cada archivo
+        //y va a llamar a la funcion uploader que hace el ajax
+        const progressUpload = (file) => {
+          //creo una etiqueta progress por cada archivo y su span con el porcentaje
+          //la etiqueta progress es una etiqueta html de una barra de progreso
+          const $progress = document.createElement("progress");
+          const $span = document.createElement("span");
+          
+          //atributo maximo que acepta la barra
+          $progress.max = 100;
+          //valor con el que empieza la barra
+          $progress.value = 0;
+
+          //voy a insertar la barra y su span al final del main
+          $main.insertAdjacentElement("beforeEnd", $progress);
+          $main.insertAdjacentElement("beforeEnd", $span);
+
+          //para controlar el objeto de carga tengo que usar el objeto FileReader que es una API
+          //FileReader detecta los bits cargados del archivo para hacer el calculo de porcentaje
+          const fileReader = new FileReader();
+          fileReader.readAsDataURL(file);
+
+          //voy a usar dos eventos del fileReader
+          //progress para cada progreso en la subida, y loadend para cuando ya termina la carga
+          //en progress voy a ir pintando la barra de progreso
+          fileReader.addEventListener("progress", e=>{
+            //el target que desencadena el evento tiene dos atributos que se usa para saber el progreso
+            //el total que es el tamaño total del archivo
+            //y el loaded que es lo que se cargo del archivo
+            //hago regla de 3 para sacar el porcentaje y uso parseInt para que no me devuelva decimales
+            let progress = parseInt((e.loaded*100)/e.total);
+            //ahora le pego el progreso al value de la barra progress
+            $progress.value = progress;
+            //y en span pongo el nombre del archivo y el progreso en numero
+            $span.innerHTML = `<b>${file.name} - ${progress}%</b>`;
+          });
+          //y en loadend cuando termine la carga del archivo llamo a la funcion uploader
+          fileReader.addEventListener("loadend", e=>{
+            uploader(file);
+            //saco la barra y el span despues de tres segundos para limpiar pantalla y quede lindo
+            //y tambien reseteo el file asi no queda pegado en memoria el archivo
+            setTimeout(() => {
+              $main.removeChild($progress);
+              $main.removeChild($span);
+              $files.value = '';
+            }, 3000);
+          });
+
+        }
+
+        document.addEventListener("change", e => {
+            if(e.target === $files){
+                //el input tipo file tiene una propiedad files
+                //console.log(e.target.files);
+
+                //e.target.files da una lista de archivos subido, pero no es tratado como lista es otro tipo de objeto
+                //con el metodo Array.from(objeto) le doy al objeto que le paso las propiedades para trabajar con los metodos de array
+                //como el foreach
+                const files = Array.from(e.target.files);
+                files.forEach(el => progressUpload(el));
+            }
+        });
+    </script>
+</body>
+</html>

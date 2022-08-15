@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libreria de componente con Estado</title>
+</head>
+
+<body>
+  <h1>Libreria de componente con Estado</h1>
+
+  <form id="todo-form">
+    <input type="text" id="todo-item" placeholder="Tarea por hacer">
+    <input type="submit" value="Agregar">
+  </form>
+  <h2>Lista de tareas</h2>
+  <ul id="todo-list"></ul>
+  <script src="Component.js"></script>
+  <script>
+    //******************************************** Libreria componentes con estado *************************************************************
+    //En components.js hice una micro libreria que hace todas las funciones que vi hasta ahora para cada componente ahora la voy a implementar
+
+    const app = new Component({
+      el: "#todo-list",
+
+      //Estado
+      data: {
+        todoList: []
+      },
+
+      //Aca meto la funcion template que la recibe el constructor
+      template: function (props) {
+        if (props.todoList.length < 1) {
+          return '<p><em>Lista sin tareas por hacer</em></p>';
+        }
+
+        let toDos = props.todoList.map(item => `<li>${item}</li>`).join("");
+
+        return toDos;
+      }
+    });
+
+    //*****************************************************************************************************************************************
+
+    //Y ahora uso los metodos que vienen de app
+
+    //Al cargar la pagina hago el renderizado
+    document.addEventListener("DOMContentLoaded", app.render);
+
+    //Estableciendo valores por defecto al state
+    //Uso el setState para mandar los nuevos valores de forma reactiva
+    app.setState({
+      //llave : valor
+      todoList: ["Tarea 1", "Tarea 2", "Tarea 3"]
+    })
+
+    document.addEventListener("submit", e => {
+      //Si no es el formulario el que desencadena devuelvo false para que no haga nada
+      if (!e.target.matches("#todo-form")) return false;
+
+      //Detengo el comportamiento por default porque lo voy a controlar con javascript
+      e.preventDefault();
+
+      const $item = document.getElementById("todo-item");
+
+      //Si no existe me salgo
+      if (!$item) return;
+
+      //Actualizo el state, AHORA SI DE FORMA REACTIVA E INMUTABLE con getState para obtener el estado anterior modificarlo y actualizarlo con setState
+      const lastState = app.getState();
+      lastState.todoList.push($item.value);
+      app.setState({ todoList: lastState.todoList });
+
+
+      //Limpiar el input
+      $item.value = "";
+      //Regreso el foco al input
+      $item.focus();
+
+    });
+  </script>
+</body>
+
+</html>

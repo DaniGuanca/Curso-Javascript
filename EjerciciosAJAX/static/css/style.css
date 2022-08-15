@@ -1,0 +1,84 @@
+/* FOOTER Y CABECERA CON MENU SENCILLA Y RESPONSIVA */
+
+:root {
+  --main-font: sans-serif;
+  --font-size: 16 px;
+  --main-color: rgb(108, 179, 184);
+  --second-color: #222;
+  --container-width: 1200px;
+}
+
+/* box sizing border box es para que el tamaño de la cajas empiece desde el borde */
+
+html {
+  box-sizing: border-box;
+  font-family: var(--main-font);
+  font-size: var(--font-size);
+  scroll-behavior: smooth;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  /* con min height: 100 hago que siempre este pegado abajo lo que tenga que ir abajo, no cuando acabe el contenido */
+  min-height: 100vh;
+  display: flex;
+  /* lo hago en columna para que se direccione de arriba a abajo */
+  flex-direction: column;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+main {
+  /* hago que el main ocupe toda la pantalla aunque no haya elementos, asi empuja lo que tiene que ir abajo, abajo*/
+  flex-grow: 1;
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 992px;
+}
+
+.header {
+  padding: 0.5rem;
+  background-color: var(--main-color);
+  color: var(--second-color);
+}
+
+.header-content {
+  display: flex;
+  /* por defecto el flex se alinea en fila asi que no hace falta darle align fila */
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo img {
+  width: 4rem;
+  height: auto;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  font-size: 110%;
+}
+
+.menu a {
+  color: rgb(214, 223, 99);
+  /*para que se separen en 1 viewport width */
+  padding: 0 1vw;
+  transition: all 0.3s ease-in-out;
+}
+
+.menu a:hover {
+  opacity: 0.75;
+}

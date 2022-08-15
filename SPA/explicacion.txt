@@ -1,0 +1,30 @@
+En la carpeta app va toda la aplicacion, en assets todo lo que yo le digo media
+En components los componentes, como cuando hacia angular
+En helpers los auxiliares son los codigos que no son componentes visuales, sino que son fragmentos de codigo
+que me sirven para resolver algo en particular
+
+Un componente es un elemento que se renderiza visualmente, fijate que arma el html o crea el nodo html y sus respectivos eventos
+por eso son componentes html que se ven, luego son llamados donde es necesario ya sea ruteo o en la App principal
+
+Los componentes se escriben empezando con mayuscula por le puse nombre App.js no lo meto a la carpeta component
+porque representa al componente padre de toda la aplicacion
+
+index.js es el archivo principal javascript que va a desencadenar toda la programacion de la SPA
+
+App.js e index.js van al mismo nivel osea dentro de la carpeta app
+
+VOY A USAR PARA GUARDAR EL ID DE UN POST EL LOCAL STORAGE, SUPER IMPORTANTE PORQUE ME RE SIRVE PARA OTROS TRABAJOS
+
+Para la delegacion de eventos esta usando !e.target.matches.... en vez de e.target.matches....
+
+RUTEO
+Para hacer los ruteos se hacen por href= #/valor en los enlaces
+O tambien se puede hacer manual con window.location.hash = "#/valor"
+
+HOC (High Order Component) permite utilizar, dentro de un componente empaquetador, dependiendo de las necesidades
+de la aplicacion un componente u otro, o una funcionalidad u otra. Basicamente dependiendo de que necesite uso 
+un componente u otro en una funcion, como el infinite scroll, que segun la ruta en que este va a cargar el  
+componente correspondiente (PostCard o PostSearch). https://es.reactjs.org/docs/higher-order-components.html
+
+STYLED COMPONENTS es cargar dinamicamente los estilos de un componente desde el mismo archivo del componente. 
+Entonces en el archivo del componente tendria su html sus funciones y sus estilos, todo en un unico archivo.

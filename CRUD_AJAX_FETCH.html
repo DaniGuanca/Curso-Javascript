@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD API REST FETCH</title>
+</head>
+<body>
+    <h1>CRUD API REST FETCH</h1>
+
+    <section class="crud">
+        <article>
+            <h2 class="crud-title">Agregar All-Star</h2>
+            <form action="" class="crud-form">
+                <input type="text" name="nombre" placeholder="nombre" required>
+                <br>
+                <input type="text" name="numero" placeholder="numero" required>
+                <br>
+                <input type="submit" value="Enviar">
+                <!-- los input type hidden no se ven 
+                este input es para cuando procese el formulario haga la accion que mande -->
+                <input type="hidden" name="id">
+            </form>
+        </article>
+
+        <!-- VOY A MOSTRAR LOS DATOS EN UNA TABLA Y AGREGAR LAS ACCIONES ELIMINAR O EDITAR EN LA CELDA -->
+        <article>
+            <h2>Ver All-Stars</h2>
+            <table class="crud-table">
+                <!-- thead es titulares o zona de cabecera -->
+                <thead>
+                    <!-- tr es una fila -->
+                    <tr>
+                        <!-- th es una cabecera -->
+                        <th>Nombre</th>
+                        <th>Numero</th>
+                        <th>Acciones</th>                        
+                    </tr>                    
+                </thead>
+                <!-- tbody es el cuerpo de la tabla -->
+                <tbody></tbody>
+            </table>
+        </article>
+    </section>
+
+    <!-- como los datos de la tabla los voy a generar dinamicamente voy a necesitar un plantilla modelo
+    del diseño de la tabla y esa plantilla la hago en la etiqueta template para despues usarla
+    para rellenar la tabla dinamicamente en su tbody -->
+    <!-- los templates no se muestran -->
+    <template id="crud-template">
+        <tr>
+            <!-- td es una celda -->
+            <td class="name"></td>
+            <td class="number"></td>
+            <!-- en esta celda voy a poner los botones para editar y eliminar -->
+            <td>
+                <button class="btnEdit">Editar</button>
+                <button class="btnDelete">Eliminar</button>
+            </td>
+        </tr>
+    </template>
+
+    <!-- por practicidad voy a trabajar los scritps en el mismo html -->
+    <script>
+
+        //LOS COMENTARIOS ESTAN DE QUE ES LO QUE HAGO ESTA EN EL HTML DE CRUD_AJAX
+        //PORQUE HAY MUCHAS COSAS QUE SON IGUALES SOLO DIFIERE EN QUE USO FETCH
+
+        const $table = document.querySelector(".crud-table"),
+         $form = document.querySelector(".crud-form"),
+         $title = document.querySelector(".crud-title"),
+         //del template no me interesa su selector sino su estructura IMPORTANTE PONER .content
+         $template = document.getElementById("crud-template").content,
+         $fragment = document.createDocumentFragment();
+
+        //mi funcion asincrona GET getall
+        const getAll = async () => {
+            try {
+                let respuesta = await fetch("http://localhost:5555/all-stars");
+                let json = await respuesta.json();
+
+                //mando al catch si la respuesta es distinta de ok osea que hubo error
+                if(!respuesta.ok) throw {status: respuesta.status, statusText: respuesta.statusText};
+
+                //leno el template lo clono lo meto en un fragmento y lo pego en el tbody la tabla
+                json.forEach(element => {
+                    $template.querySelector(".name").textContent = element.nombre;
+                    $template.querySelector(".number").textContent = element.numero;
+
+                    $template.querySelector(".btnEdit").dataset.id = element.id;
+                    $template.querySelector(".btnEdit").dataset.name = element.nombre;
+                    $template.querySelector(".btnEdit").dataset.number = element.numero;
+
+                    $template.querySelector(".btnDelete").dataset.id = element.id;
+
+                    //clonar
+                    let $clone = document.importNode($template,true);
+                    $fragment.appendChild($clone);
+                });
+
+                $table.querySelector("tbody").appendChild($fragment);
+
+            } catch (error) {
+                let message = error.statusText||"Ocurrio un error;"
+                $table.insertAdjacentHTML("afterend",`<p><b>Error ${error.status}: ${message}</b></p>`);
+            }
+        }
+
+
+        document.addEventListener("DOMContentLoaded",getAll());
+
+        //POST Y PUT
+        document.addEventListener("submit", async e => {
+            if(e.target === $form){
+                e.preventDefault();
+                if(!e.target.id.value){ 
+                    //CREATE POST
+                    try {
+                        //para los metodos que no son GET hay que mandar opciones al fetch
+                        //en opciones tengo que especificar el metodo a usar
+                        //la cabecera y el cuerpo convertido en cadena si es necesario
+                        let options = {
+                            method: 'POST',
+                            headers: {
+                                "Content-type": "application/json; charset=utf-8"
+                            },
+                            body:JSON.stringify({
+                                nombre: e.target.nombre.value,
+                                numero: e.target.numero.value
+                            })
+                        };
+                        let respuesta = await fetch("http://localhost:5555/all-stars", options);
+                        let json = await respuesta.json();
+
+                        if(!respuesta.ok) throw {status: respuesta.status, statusText: respuesta.statusText};
+                        //recargo pagina
+                        location.reload();
+                    } catch (error) {
+                        let message = error.statusText||"Ocurrio un error;"
+                        $form.insertAdjacentHTML("afterend",`<p><b>Error ${error.status}: ${message}</b></p>`);
+                    }
+                }else {
+                    //UPDATE PUT
+                    try {
+                        let options = {
+                            method: "PUT",
+                            headers: {
+                            "Content-type" : "application/json; charset=utf-8"
+                            },
+                            body: JSON.stringify({
+                            nombre : e.target.nombre.value,
+                            numero : e.target.numero.value
+                            })
+                        }
+                    
+                        let respuesta = await fetch(`http://localhost:5555/all-stars/${e.target.id.value}`,options);
+                        let json = await respuesta.json();
+
+                        if(!respuesta.ok) throw {status: respuesta.status, statusText: respuesta.statusText};
+                        //recargo pagina
+                        location.reload();
+                    } catch (error) {
+                        let message = error.statusText||"Ocurrio un error;"
+                        $form.insertAdjacentHTML("afterend",`<p><b>Error ${error.status}: ${message}</b></p>`);
+                    }                    
+                };
+            }
+        });
+
+        //DELETE
+        document.addEventListener("click", async e => {
+            if(e.target.matches(".btnEdit")){
+                $title.textContent = "Editar All-Star";
+
+                $form.nombre.value = e.target.dataset.name;
+                $form.numero.value = e.target.dataset.number;
+                $form.id.value = e.target.dataset.id;
+            }
+            if(e.target.matches(".btnDelete")){
+                //DELETE
+                let isDelete = confirm(`Seguro de eliminar el elemento con id: ${e.target.dataset.id}`);
+                if(isDelete){
+                    try {
+                        //DELETE no necesita body por lo tanto tampoco header asi que le mando el method directamente
+                        let respuesta = await fetch(`http://localhost:5555/all-stars/${e.target.dataset.id}`, {method: "DELETE"});
+                        let json = await respuesta.json();
+
+                        if(!respuesta.ok) throw {status: respuesta.status, statusText: respuesta.statusText};
+                        //recargo pagina
+                        location.reload();
+                    } catch (error) {
+                        let message = error.statusText||"Ocurrio un error;"
+                        alert(message);
+                    }                    
+                }
+            }
+        });
+
+    </script>    
+</body>
+</html>

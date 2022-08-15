@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selects Anidados</title>
+</head>
+<body>
+    <h1>Selects Anidados</h1>
+    <h2>Mexico</h2>
+    <label for="estados">Estados</label>
+    <select id="estados">
+        <option value="predeterminado" selected>Elige un Estado</option>
+    </select>
+    <br><br>
+    <label for="municipios">Municipios</label>
+    <select id="municipios">
+        <option value="predeterminado" selected>Elige un Municipio</option>
+    </select>
+    <br><br>
+    <label for="colonias">Colonias</label>
+    <select id="colonias">
+        <option value="predeterminado" selected>Elige una Colonia</option>
+    </select>
+    
+    <aside class="error"></aside>
+
+    <script>
+        const $estados = document.getElementById('estados');
+        let $templateEstado = `<option value="predeterminado" selected>Elige un Estado</option>`;
+        const $municipios = document.getElementById('municipios');
+        let $templateMunicipio = `<option value="predeterminado" selected>Elige un Municipio</option>`;
+        const $colonias = document.getElementById('colonias');
+        const $error = document.querySelector('.error');
+
+        //Obtengo estados
+        document.addEventListener('DOMContentLoaded',async e => {
+            try {
+                let response = await fetch("https://api-sepomex.hckdrk.mx/query/get_estados");
+                let estados = await response.json();
+
+                if(!response.ok) throw {status: response.status, statusText: response.statusText};
+                
+                estados.response.estado.forEach(estado => {
+                    $templateEstado += `<option value="${estado}">${estado}</option>`;
+                });
+
+                $estados.innerHTML = $templateEstado;
+
+                
+            } catch (error) {
+                console.log(error);
+                let message = error.statusText || "Ocurrio un error";
+                $error.innerHTML = `<p>Error ${error.status}: ${message}`;
+            }
+
+        });
+    
+        //Obtengo municipios
+        $estados.addEventListener('change', async e => {
+            if (e.target.value != "predeterminado"){
+                try {
+                    let response = await fetch(`https://api-sepomex.hckdrk.mx/query/get_municipio_por_estado/${e.target.value}`);
+                    let municipios = await response.json();
+
+                    if(!response.ok) throw {status: response.status, statusText: response.statusText};
+
+                    $templateMunicipio = `<option value="predeterminado" selected>Elige un Municipio</option>`;
+
+                    municipios.response.municipios.forEach(municipio => {
+                        $templateMunicipio += `<option value="${municipio}">${municipio}</option>`;
+                    });
+
+                    $municipios.innerHTML = $templateMunicipio;
+
+                } catch (error) {
+                    console.log(error);
+                    let message = error.statusText || "Ocurrio un error";
+                    $error.innerHTML = `<p>Error ${error.status}: ${message}`;
+                }
+            }else{
+                $municipios.innerHTML = `<option value="predeterminado" selected>Elige un Municipio</option>`;
+            }
+        })
+    
+        //Obtengo colonias (no lo hice con delegacion porque fue algo que agregue de ultimo momento y da paja modificar el change para delegacion de eventos)
+        $municipios.addEventListener('change', async e => {
+            if (e.target.value != "predeterminado"){
+                try {
+                    let response = await fetch(`https://api-sepomex.hckdrk.mx/query/get_colonia_por_municipio/${e.target.value}`);
+                    let colonias = await response.json();
+
+                    if(!response.ok) throw {status: response.status, statusText: response.statusText};
+
+                    let $templateColonia = `<option value="predeterminado" selected>Elige una Colonia</option>`;
+
+                    colonias.response.colonia.forEach(colonia => {
+                        $templateColonia += `<option value="${colonia}">${colonia}</option>`;
+                    });
+
+                    $colonias.innerHTML = $templateColonia;
+
+                } catch (error) {
+                    console.log(error);
+                    let message = error.statusText || "Ocurrio un error";
+                    $error.innerHTML = `<p>Error ${error.status}: ${message}`;
+                }
+            }else{
+                $colonias.innerHTML = `<option value="predeterminado" selected>Elige una Colonia</option>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemons</title>
+    <style>
+        html {
+            text-align: center;
+        }
+        .grid-fluid {
+            display: grid;
+            /*El grid queda responsivo gracias a esta propiedad grid-template-columns con minmax
+            grid-template-column es para decir cuantas columnas va a haber si pongo repeat(auto-fit) hago
+            que automaticamente haga una columna por elemento, y el otro parametro la anchura
+            al usar la funcion minmax() pongo tamaño minimo y uno maximo de anchura
+            1fr hace referencia a una fraccion osea que conserva la relacion y hace una fraccion mas grande*/
+            grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+            text-align: center;
+        }
+        /* Queda centrado el loader */
+        .loader{
+            display: block;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pokemons</h1>
+    <!-- Este ejercicio se trata de paginacion, en el nav voy a poner los links siguiente y atras -->
+    <nav class="links"></nav>
+    <main class="grid-fluid"></main>
+    <script>
+        const $main = document.querySelector('main');
+        const $links = document.querySelector(".links");
+        //Url de la API para los pokemones
+        let pokeAPI = "https://pokeapi.co/api/v2/pokemon/";
+
+        //Primero hago una peticion general de los 20 pokemones por pagina
+        //Por cada pagina tengo que hacer una peticion particular por cada pokemon de los 20 para sacar su imagen
+        //Osea que haria dos peticiones, una general y una particular entonces conviene usar funciones asincronas
+        async function loadPokemons(url) {
+            try {
+                //Va a hacer todo por innnerHTML no es lo optimo pero el objetivo es ver como pagina 
+                //Si quiero hacerlo optimo tengo que trabajar como venia antes con los templates y fragments
+                $main.innerHTML = `<img class="loader" alt="Cargando..." src="../media/loader.svg" >`;
+
+                let res = await fetch(url);
+                let json = await res.json();
+
+                //Voy a ir metiendo los pokemones en la variable template por innerHTML, nextlink y prevlink
+                //hacen referencia a su nombre
+                let $template = "";
+                let $nextLink;
+                let $prevLink;
+
+                /* La respuesta de esta api trae un arreglo de 20 pokemones y cada pokemon tiene un nombre y su url
+                para acceder a sus detalles. A esa url va a ser el otro fetch para sacar la imagen.
+                La respuesta tambien tiene un count que dice la cantidad de pokemones totales
+                Y dos atributos, next y previous que tienen la url para conseguir los siguientes 20 pokemones
+                o los 20 anteriores. */
+                //console.log(json);
+                
+                if(!res.ok) throw {status: res.status, statusText: res.statusText};
+
+
+                /* *********************************IMPORTANTE**********************************************************
+
+                El metodo FOREACH de los arreglos no va a esperar a que una peticion ajax responda, directamente va a pasar al otro elemento.
+
+                En cambio el metodo FOR si espera, el metodo FOR es bloqueante, asi que si tengo que hacer peticiones ajax a cada elemento
+                de un arreglo siempre conviene usar FOR porque va a esperar que termine el ciclo de cada elemento.
+                ******************************************************************************************************************** */
+                for (let i=0; i<json.results.length; i++){
+                    //console.log(json.results[i]);
+                    //Entro a la url de cada pokemon para sacar la imagen
+                    try {
+                        let res = await fetch(json.results[i].url);
+                        let pokemon = await res.json();
+
+                        if(!res.ok) throw {status: res.status, statusText: res.statusText};
+                        //console.log(pokemon);
+                        
+                        $template += `<figure class="producto">
+                                            <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
+                                            <figcaption>${pokemon.name}</figcaption>
+                                        </figure>`;
+
+                    } catch (error) {
+                        console.log(error);
+                        let message = error.statusText || "Ocurrio un error";
+                        $template += `<figure class="producto">
+                                            <figcaption>Error ${error.status}: ${message}</figcaption>
+                                        </figure>`;                        
+                    }
+                }
+
+                $main.innerHTML = $template;
+                //Si existe formo el enlace sino lo dejo vacio
+                $prevLink = json.previous ? `<a href="${json.previous}">⏮️</a>` : "";
+                $nextLink = json.next ? `<a href="${json.next}">⏭️</a>` : "";
+                $links.innerHTML = $prevLink + "" + $nextLink;
+
+
+            } catch (error) {
+                console.log(error);
+                let message = error.statusText || "Ocurrio un error";
+                $main.innerHTML = `<p>Error ${error.status}: ${message}</p>`;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", e => loadPokemons(pokeAPI));
+
+        //Le mando el ajax a los click de los enlaces
+        document.addEventListener("click", e => {
+            if (e.target.matches(".links a")){
+                e.preventDefault();
+                console.log(e.target.href);
+                loadPokemons(e.target.href);
+                // e.target.getAttribute("href"); tambien es valido
+            }
+        });
+    </script>
+</body>
+</html>

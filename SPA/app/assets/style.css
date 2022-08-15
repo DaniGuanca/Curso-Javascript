@@ -1,0 +1,152 @@
+html {
+    /*El box sizing en border box es para que se muestren desde el borde sin padding*/
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-size: 16px;
+}
+
+*,
+*:after,
+*:before {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    overflow-x: hidden;
+}
+
+a {
+    color: #01579b;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #00b0ff;
+}
+
+h1 {
+    text-align: center;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.header {
+    padding: 0.5rem;
+    position: sticky;
+    top: 0;
+    text-align: center;
+    background-color: #fff;
+}
+
+/*Hago un espaciado entre los elementos del header porque estaban muy pegados*/
+/*        > es hijos directos                                       */
+.header > * {
+    margin: 1rem auto;
+}
+
+.error {
+    padding: 1rem;
+    font-size: 150%;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    background-color: #dc3545;
+}
+
+.error mark{
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    /*Para que se vea mejor el padding y el border radius pongo display inline block*/
+    display: inline-block;
+    color: #fff;
+    background-color: #01579b;
+}
+
+.loader {
+    margin: 1rem auto;
+    display: block;
+    width: 4rem;
+    height: 4rem;
+}
+
+.search-form {
+    margin: auto;
+    text-align: center;
+}
+
+.search-form input {
+    display: block;
+    margin: auto;
+    /*Para que no este todo el texto pegado dentro de la caja le pongo algo de padding */
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+
+.post-card {
+    margin: 1rem auto;
+    padding: 1rem;
+    width: 80%;
+    background-color: #eceff1;
+}
+
+/*Como el parrafo es un linea, hago que el espacio entre los elementos sean iguales, a la izquierda fecha
+a la derecha el enlace ver publicacion*/
+.post-card p {
+    display: flex;
+    justify-content: space-between;
+}
+
+/*Grid responsiva sin necesidad de mediaQuery con grillas responsivas*/
+.grid-fluid {
+    margin: 1rem auto;
+    max-width: 90%;
+    display: grid;
+    /*Con esto, dependiendo de cuantos elementos haya en el grid, genera una columna por elemento, por eso repeat.
+    Cada celda de la grilla va a tener como tamaño minimo 280px hasta 1fr osea hasta el espacio disponible*/
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/*Post individual*/
+.post-page{
+    margin: 1rem auto;
+    padding: 1rem;
+    width: 80%;
+    background-color: #eceff1;
+}
+
+/*el hijo directo aside*/
+.post-page > aside {
+    margin: auto;
+    width: 60%;
+    text-align: center;
+}
+
+.post-page > hr {
+    border: thin solid #cfd8dc;
+    margin: 2rem auto;
+    width: 80%;
+}
+
+.post-page time {
+    margin: 1rem auto;
+    display: block;
+}
+
+.post-page > article {
+    padding: 0 2rem;
+}
+
+/*Ahora todos los elementos media de los post lso quiero centrados*/
+.post-page img,
+.post-page audio,
+.post-page iframe,
+.post-page video {
+    margin: auto;
+    display: block;
+    max-width: 100%;
+}

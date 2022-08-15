@@ -1,0 +1,121 @@
+/* Reseteear CSS */
+/*EN :root van todas mis variables
+el color modal tiene un cuarto argumento es la opacidad asi sea algo mas trasparente
+doble punto es que estoy declarando una clase*/
+:root {
+    --main-font: sans-serif;
+    --font-size: 16px;
+    --main-color: darkorchid;
+    --second-color: #222;
+    --main-modal-color:rgba(229, 30, 247, 0.85);
+    --second-modal-color: rgba(34,34,34,0.85);
+    --container-width: 1200px;
+  }
+  
+  /*ahora reseteo el html con el tamaño de la caja entera
+  la fuente de letra que puse arriba como variable y el tamaño tambien
+  y el scroll behavior es para que el deslizamiento o desplazamiento sea lindo suave*/
+  html {
+    box-sizing: border-box;
+    font-family: var(--main-font);
+    font-size: var(--font-size);
+    scroll-behavior: smooth;
+  }
+  
+  /*el asterico significa todos los elementos
+  el elemento after y before los elementos posteriores y anteriores
+  inherit significa que hereda el valor del padre*/
+  *, *before, *after {
+    box-sizing: inherit;
+  }
+  
+  /*para eliminar los bordes le saco el margen porque por defecto vienen con 8px
+  overlfow x hidden es para cuando hay mucho contenido horizontal en vez de que salga la barra de desplazamiento
+  se oculte automaticamente ese contenido*/
+  body {
+    margin : 0;
+    overflow-x: hidden;
+  }
+  
+  /*si hay imagenes hago que se adapte a la maxima anchura del contender que lo tenga*/
+  img {
+    max-width:100%;
+    height: auto;
+  }
+  
+
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+ /* vh y vw es view heigth y view width si pones bottom entonces el 0 es abajo y 100 es al tope
+/* el z-index con numero alto es para que cuando algo se superponga quede atras del boton
+.panel-btn {
+  position: fixed;
+  z-index: 999;
+  bottom: 1vh;
+  right: 1vw;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--main-color);
+}
+
+/*aca le doy z index 998 para que este delante de las otras cosas pero atras del boton
+top y bottom en 0 es para que vaya desde una punta de la pantalla a la otra al 0 de una y otra
+left y right lo mismo pero de en anchura
+.panel {
+  position: fixed;
+  z-index: 998;
+  background-color: var(--second-modal-color);
+  width: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  /*le aplico una transicion para que sea mas lindo, el primer argumnto es a quien le aplico
+  el segundo de cuanto tiempo y el tercero el modo, ease es el mas suave
+  transition: transform 0.3s ease;
+  /*con el transform voy a hacer que aparezca de arriba o de costado
+  el translate recibe x e y como argumento 
+  los valores negativos es de mas arriba por eso pongo -100 para que este bien arriba y no se vea
+  transform: translate(0, -100%);
+    /*de abajo
+  transform: translate(0, 100%);
+  /*de derecha
+  transform: translate(100%, 0);
+  /*de izquierda
+  transform: translate(-100%, 0);
+}
+
+/*Creo la clase que voy a usar en el toggle para activar y desactivar el panel
+aca voy a poner el transform a 0 0 asi se ve 
+.panel.is-active {
+  transform: translate(0, 0);
+
+width inherit es para que herede la anchura del padre
+.menu {
+  width: inherit;
+}
+
+.menu a{
+  padding: 2rem;
+  width: inherit;
+  display: block;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: var(--main-color);
+  ESTE TRANSITION ES PARA QUE TENGA UNA TRANSICION LINDA
+  transition:all 0.3s ease;
+}
+
+:HOVER es cuando pasas el puntero por el elemnto entonces cuando pase se activa el estilo
+.menu a:hover {
+  font-weight:bold;
+  color: var(--second-color);
+  background-color: var(--main-modal-color);
+}
+
+*/

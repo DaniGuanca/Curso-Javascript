@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordPress REST API</title>
+    <!--La fuente de google fonts-->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        html{
+            box-sizing: border-box;
+            /*Si no detecta raleway usa sans-serfi*/
+            font-family: 'Raleway', sans-serif;
+            font-size: 16px;
+        }
+
+        *,
+        *:after,
+        *:before{
+            box-sizing: inherit;
+        }
+
+        a{
+            color: #01579b;
+            transition: all .3s ease-out;
+        }
+
+        a:hover {
+            opacity: .75;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        hr {
+            border: thin solid #01579b;
+            margin: 3rem auto;
+            width: 80%;
+        }
+
+        .site {
+            /*Margin 1 rem arriba y abajo, automatico a los lados*/
+            margin: 1rem auto;
+            padding: 1rem;
+            max-width: 50%;
+            text-align: center;
+        }
+
+        .post {
+            margin: 1rem auto;
+            padding: 1rem;
+            border-radius: .5rem;
+            max-width: 80%;
+            text-align: center;
+            background-color: #eceff1;
+        }
+
+        .post-author img {
+            border-radius: 50%;
+        }
+
+        .post-date {
+            margin: 1rem auto;
+            display: block;
+        }
+
+        /*Arriba hice que post tenga todo en text align center, pero hay textos que quiero que empiecen a la izquierda asi que lo hago aca*/
+        .post-excerpt,
+        .post-categories,
+        .post-tags,
+        .post-content {
+            text-align: left;
+        }
+
+        .post-content summary {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .post-content>article {
+            padding: 1rem;
+            background-color: #e3f2fd;
+        }
+
+        /*Hago que las imagenes del contenido del post(cuando abro los detalles) se centren*/
+        .post-content img{
+            display:block;
+            margin: auto;
+        }
+
+        .loader{
+            margin: 2rem auto;
+            display: none;
+        }
+    </style>    
+</head>
+
+<body>
+    <h1>WordPress REST API</h1>
+    <!--Aca va a ir el titulo y descripcion del sitio que agarre de wordpress-->
+    <article id="site" class="site"></article>
+    <!--Aca va a ir los post del sitio-->
+    <section id="posts" class="posts"></section>
+
+    <img class="loader" src="../media/loader.svg" alt="Cargando...">
+
+    <!--Un template para cada post individual-->
+    <template id="post-template">
+        <article class="post">
+            <img class="post-image">
+            <aside>
+                <h2 class="post-title"></h2>
+                <!--Esta figure va a tener adentro la imagen del autor y su nombre-->
+                <figure class="post-author"></figure>
+                <!--La fecha en letra pequeña-->
+                <small class="post-date"></small>
+                <!--El link del post-->
+                <a class="post-link" target="_blank">Ver publicacion original</a>
+                <!--El excertp que creo que es un resumen, eso devuelve la api-->
+                <p class="post-excerpt"></p>
+                <!--En este div va ir una lista de las categorias a la que pertenece el post-->
+                <div class="post-categories"></div>
+                <!--En este div va ir una lista de las etiquetas a la que pertenece el post-->
+                <div class="post-tags"></div>
+                <!--Details es una etiqueta que te muestra en modo de arcodeon, un titulo y su detales que se abren cuando hace click
+                Details usa dos etiquetas, summary que es el texto colapsado
+                y la otra etiqueta es el detalle que al hacer click se descolapsa-->
+                <details class="post-content">
+                    <summary>Ver contendido de la publicacion</summary>
+                    <article></article>
+                </details>
+            </aside>
+        </article>
+        <!--Una linea para ver donde acaba el post-->
+        <hr>
+    </template>
+
+    <script>
+        const $site = document.getElementById("site");
+        const $posts = document.getElementById("posts");
+        const $loader = document.querySelector(".loader");
+        //ACORDATE DEL CONTENT
+        const $template = document.getElementById("post-template").content;
+        //El fragmento
+        const $fragment = document.createDocumentFragment();
+
+        //Creo variables necesarias
+        //TODAS LAS PAGINAS DE WORDPRESS PARECEN MANDAR LO MISMO EN LA API ASI QUE YA ESTA LISTO PARA UTILIZAR EN CUALQUIER PAGINA (salvo algunos casos)
+        //SOLO TENGO QUE CAMBIAR EN LA VARIABLE DOMINIO LA PAGINA QUE QUIERO
+        //El dominio del sitio que quiero sacarle informacion
+        const DOMAIN = "https://malvestida.com";
+        //La ruta para sacar informacion al dominio
+        const SITE = `${DOMAIN}/wp-json`;
+        //La ruta para sacar solo la informacion correspondiente a la api de wordpress v2 del dominio
+        const API_WP = `${SITE}/wp/v2`;
+        //Por ultimo los endpoints de la informacion que quiero acceder como los posts o las categorias etc
+        //Signo de interrogacion significa que pasamos variable, y embed es para que muestre mas detalles el resulatdo de la peticion
+        //ese embed es propio de la API
+        const POSTS = `${API_WP}/posts?_embed`;
+        const PAGES = `${API_WP}/pages`;
+        const CATEGORIES = `${API_WP}/categories`;
+
+
+        //VARIABLES PARA EL SCROLL INFINITO
+        //Page en 1 para que cargue la primer pagina
+        let page = 1;
+        //perPage en 5 para que cargue de 5 en 5 posts
+        let perPage = 5;
+
+        //HACE FETCH COMUN CON PROMESA
+        //Funcion para la informacion del sitio
+        function getSiteData(){
+            fetch(SITE)
+             .then(response => response.ok? response.json() : Promise.reject(response))
+             .then(json => {
+                console.log(json);
+                //Como son pocos elementos los que saco del site (3 o 4) no uso template lo hago directo por innerHTML
+                //Los elementos que saco son el titulo, la url, la descripcion y la zona horaria
+                $site.innerHTML = `
+                    <h3>Sitio Web</h3>
+                    <h2>
+                        <a href="${json.url}" target="_blank">${json.name}<a/>
+                    </h2>
+                    <p>${json.description}</p>
+                    <p>${json.timezone_string}</p>
+                `;
+             })
+             .catch(error => {
+                console.log(error);
+                let message = error.statusText || "Ocurrio un error";
+                $site.innerHTML = `<p>Error ${error.status}: ${message}`;
+             });
+        };
+
+        //Funcion para sacar los posts
+        //Oculto el loader cuando tengo los posts porque tardas mas en devolver los posts que el site
+        function getPosts(){
+            $loader.style.display = "block";
+            //Antes del scroll infinito
+            //fetch(POSTS)
+            //Con scroll infinito, la diferencia es que a POSTS le concaqueteno las variables de pagina y post por pagina con los valores
+            //de mis variables
+            //Para mandar variables por direcciones se usa el signo de interrogacion ? que ya use en embebed, asi que aqui
+            //concateno con un & (and) seguido del nombre de la variabe, per_page y page son las variables que te da la documentacion de la api
+            fetch(`${POSTS}&page=${page}&per_page=${perPage}`)
+             .then(response => response.ok? response.json() : Promise.reject(response))
+             .then(json => {
+                console.log(json);
+
+                json.forEach(element => {
+                    //Creo las variables que me van a servir para manejar categorias y etiquetas
+                    let categories = "";
+                    let tags = "";
+
+                    //Uso ["wp:term"] porque la otra notacion no te deja, la explicacion mas abajo
+                    //Recorro todas las categorias
+                    element._embedded["wp:term"][0].forEach(categoria => categories += `<li>${categoria.name}</li>`);
+
+                    //Recorro todas las etiquetas
+                    element._embedded["wp:term"][1].forEach(etiqueta => tags += `<li>${etiqueta.name}</li>`);
+
+                    //["wp:featuredmedia"] pongo en notacion de corchete porque en notacion de punto no te deja poner dos puntos
+                    //funciona igual que si pondria puntos pero bueno no me deja poner dos puntos asi que por eso uso corchete
+                    //Uso el operador ternario porque a veces viene sn el featureMedia el post, si no existe pongo texto blanco
+                    $template.querySelector(".post-image").src = element._embedded["wp:featuredmedia"]? 
+                    element._embedded["wp:featuredmedia"][0].source_url: "";
+
+                    $template.querySelector(".post-image").alt = element.title.rendered;
+                    $template.querySelector(".post-title").innerHTML = element.title.rendered;
+                    $template.querySelector(".post-link").href = element.link;
+                    //A mircha no le gusta los corchetes con puntos suspensivos que devuevle la cadena asi que los reemplaza por puntos
+                    //lo reemplzasa con la funcion replace que recibe la cadena a reemplazar y el valor nuevo
+                    $template.querySelector(".post-excerpt").innerHTML = element.excerpt.rendered.replace("[&hellip;]","...");
+                    //Paso la fecha a algo mas lindo
+                    $template.querySelector(".post-date").textContent = new Date(element.date).toLocaleDateString();
+                    $template.querySelector(".post-content > article").innerHTML = element.content.rendered;
+                    //Uso de nuevo corchete en element._embedded.author[0].avatar_urls["48"] porque no deja poner punto y numero
+                    $template.querySelector(".post-author").innerHTML = `
+                        <img src="${element._embedded.author[0].avatar_urls["48"]}" alt="${element._embedded.author[0].name}">
+                        <figcaption>${element._embedded.author[0].name}</figcaption>
+                    `;
+                    //Voy a imprimir cada categoria y etiqueta
+                    $template.querySelector(".post-categories").innerHTML = `
+                        <p>Categorias:</p>
+                        <ul>${categories}</ul>
+                    `;
+
+                    $template.querySelector(".post-tags").innerHTML = `
+                        <p>Etiquetas:</p>
+                        <ul>${tags}</ul>
+                    `;
+
+                    let $clone = document.importNode($template, true);
+                    $fragment.appendChild($clone);                    
+                });
+
+                $posts.appendChild($fragment);
+
+                $loader.style.display = "none";
+             })
+             .catch(error => {
+                console.log(error);
+                let message = error.statusText || "Ocurrio un error";
+                $posts.innerHTML = `<p>Error ${error.status}: ${message}`;
+                $loader.style.display = "none";
+             });
+        };
+
+        document.addEventListener("DOMContentLoaded", e => {
+            getSiteData();
+            getPosts();
+        });
+    
+        //Voy a hacer paginacion con scroll infinito asi voy cargando mas post mientras scrolleo, esto sirve para cualquier pagina
+        //PERO HAY QUE VER LA DOCUMENTACION COMO TRAE CADA PAGINA Y CAMBIAR ESO, EN ESTE CASO MANDA VARIABLE POR URL
+        //El scrolleo infinito consiste en que cuando el scroll llega al fondo de la pagina comienza a cargar mas posts osea detecta el final de la barra de desplazamiento
+        //entonces siempre voy a estar comparando que el scroll llegue al final de la barra de desplazamiento y ahi hacer la peticion para cargar mas elementos
+        //El evento scroll
+        window.addEventListener("scroll", e => {
+            //Hago destructuracion
+            //Tenemos body head pero no html, en javascript el html es documentElement
+            //Del documentElement me interesa sacar el scrollTop, el clientHeight y el scrollHeight
+            /*
+                El scrollTop: me dice cuantos pixeles estoy alejado del tope de la pagina
+                ClientHeight: tira cual es el tamaño del viewport del navegador (osea la ventana visible)
+                scrollHeight: da el total de scroll de toda la pagina
+
+                ENTONCES SI LA SUMA DE scrolltop + clientHeight >= scrollHeight QUIERE DECIR QUE ESTOY AL FINAL DE LA PAGINA, y aca tengo 
+                que hacer la peticion de carga 
+            */
+            const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+
+            if (scrollTop + clientHeight >= scrollHeight){
+                //console.log("cargar mas post")
+                //incremento la pagina asi siempre va cargando las paginas restantes
+                page++;
+                //llamo a la funcion que carga posts
+                getPosts();
+            }
+
+            //console.log(scrollTop, clientHeight, scrollHeight);
+        });
+    
+    </script>
+
+</body>
+</html>

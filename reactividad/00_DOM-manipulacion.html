@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manipulacion manual del DOM</title>
+</head>
+
+<body>
+  <!--ESTE EJERCICIO ES PARA HACER UN LISTA TO-DO DE MANERA MANUAL . NO REACTIVA AL PARECER-->
+  <h1>Manipulacion manual del DOM</h1>
+
+  <form id="todo-form">
+    <input type="text" id="todo-item" placeholder="Tarea por hacer">
+    <input type="submit" value="Agregar">
+  </form>
+  <h2>Lista de tareas</h2>
+  <ul id="todo-list"></ul>
+
+  <script>
+    const $item = document.getElementById("todo-item");
+    const $list = document.getElementById("todo-list");
+
+    document.addEventListener("submit", e => {
+      //Si no es el formulario el que desencadena devuelvo false para que no haga nada
+      if (!e.target.matches("#todo-form")) return false;
+
+      //Detengo el comportamiento por default porque lo voy a controlar con javascript
+      e.preventDefault();
+
+      //Agrego item a la lista
+      let $li = document.createElement('li');
+      $li.textContent = $item.value;
+
+      //Meto el hijo
+      $list.appendChild($li);
+
+
+      //Limpiar el input
+      $item.value = "";
+      //Regreso el foco al input
+      $item.focus();
+
+    });
+
+    //LISTO ESTO ES UN EJEMPLO FUNCIONANDO PERO SIN REACTIVIDAD, no esta basada en estado, en la siguiente sesion lo hace
+
+  </script>
+</body>
+
+</html>
